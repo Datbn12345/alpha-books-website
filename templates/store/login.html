@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}
+Đăng nhập - Alpha-books
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <section class="auth-page">
+
+        <h1 class="section-title">
+            Đăng nhập
+        </h1>
+
+        {% if error %}
+
+            <div class="error-message">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+
+                <label>
+                    Tên đăng nhập
+                </label>
+
+                <input
+                    type="text"
+                    name="username"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Mật khẩu
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    required
+                >
+
+            </div>
+
+            <button type="submit">
+                ĐĂNG NHẬP
+            </button>
+
+        </form>
+
+        <p>
+            Chưa có tài khoản?
+            <a href="{% url 'register' %}">
+                Đăng ký ngay
+            </a>
+        </p>
+
+    </section>
+
+</div>
+
+{% endblock %}

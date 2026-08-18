@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Trang chủ - Alpha-books
+{% endblock %}
+
+
+{% block content %}
+
+
+<div class="container">
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="hero-box">
+
+            <div class="hero-content">
+
+                <h1>
+                    Khám phá thế giới sách
+                </h1>
+
+                <p>
+                    Những cuốn sách hay giúp bạn
+                    mở rộng kiến thức, phát triển
+                    bản thân và khám phá thế giới.
+                </p>
+
+                <a href="#" class="hero-button">
+                    KHÁM PHÁ SÁCH
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- CATEGORY -->
+
+    <section class="section">
+
+        <h2 class="section-title">
+            Danh mục sách
+        </h2>
+
+
+        <div class="category-grid">
+
+            {% for category in categories %}
+
+                <a href="#" class="category-card">
+
+                    <h3>
+                        {{ category.name }}
+                    </h3>
+
+                    {% if category.description %}
+
+                        <p>
+                            {{ category.description }}
+                        </p>
+
+                    {% else %}
+
+                        <p>
+                            Khám phá những cuốn sách
+                            thuộc danh mục này.
+                        </p>
+
+                    {% endif %}
+
+                </a>
+
+
+            {% empty %}
+
+                <p>
+                    Chưa có danh mục sách.
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+
+    <!-- FEATURED BOOKS -->
+
+    <section class="section">
+
+        <h2 class="section-title">
+            Sách nổi bật
+        </h2>
+
+
+        <div class="product-grid">
+
+
+            {% for book in books %}
+
+                <div class="product-card">
+
+
+                    <div class="product-image">
+
+                        {% if book.image %}
+
+                            <img
+                                src="{{ book.image.url }}"
+                                alt="{{ book.title }}"
+                            >
+
+                        {% else %}
+
+                            <div class="no-image">
+                                Chưa có ảnh
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="product-info">
+
+
+                        <a href="#"
+                           class="product-title">
+
+                            {{ book.title }}
+
+                        </a>
+
+
+                        <div class="product-price">
+
+                            <span class="current-price">
+
+                                {{ book.price|floatformat:0 }} ₫
+
+                            </span>
+
+
+                            {% if book.original_price %}
+
+                                <span class="original-price">
+
+                                    {{ book.original_price|floatformat:0 }} ₫
+
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        {% if book.original_price %}
+
+                            <span class="product-discount">
+
+                                Giảm giá
+
+                            </span>
+
+                        {% endif %}
+
+
+                        <a href="#"
+                           class="product-button">
+
+                            XEM CHI TIẾT
+
+                        </a>
+
+
+                    </div>
+
+                </div>
+
+
+            {% empty %}
+
+                <p>
+                    Chưa có sách.
+                </p>
+
+            {% endfor %}
+
+
+        </div>
+
+    </section>
+
+
+
+</div>
+
+
+{% endblock %}

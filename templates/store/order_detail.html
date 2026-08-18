@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}
+Đơn hàng #{{ order.id }} - Alpha-books
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <section class="section">
+
+        <!-- ========================= -->
+        <!-- THÔNG BÁO -->
+        <!-- ========================= -->
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="form-success">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+
+        <!-- ========================= -->
+        <!-- TIÊU ĐỀ -->
+        <!-- ========================= -->
+
+        <div class="order-success">
+
+            <div class="order-success-icon">
+                ✓
+            </div>
+
+            <h1>
+                Đặt hàng thành công!
+            </h1>
+
+            <p>
+                Cảm ơn bạn đã mua hàng tại Alpha-books.
+            </p>
+
+            <p>
+                Mã đơn hàng:
+                <strong>
+                    #{{ order.id }}
+                </strong>
+            </p>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- THÔNG TIN ĐƠN HÀNG -->
+        <!-- ========================= -->
+
+        <div class="order-layout">
+
+            <!-- THÔNG TIN NHẬN HÀNG -->
+
+            <div class="order-box">
+
+                <h2>
+                    Thông tin nhận hàng
+                </h2>
+
+
+                <div class="order-info">
+
+                    <p>
+                        <strong>
+                            Người nhận:
+                        </strong>
+
+                        {{ order.full_name }}
+                    </p>
+
+
+                    <p>
+                        <strong>
+                            Số điện thoại:
+                        </strong>
+
+                        {{ order.phone }}
+                    </p>
+
+
+                    <p>
+                        <strong>
+                            Địa chỉ:
+                        </strong>
+
+                        {{ order.address }}
+                    </p>
+
+
+                    <p>
+                        <strong>
+                            Phương thức thanh toán:
+                        </strong>
+
+                        {{ order.get_payment_method_display }}
+                    </p>
+
+
+                    <p>
+                        <strong>
+                            Trạng thái:
+                        </strong>
+
+                        {{ order.get_status_display }}
+                    </p>
+
+
+                    <p>
+                        <strong>
+                            Ngày đặt:
+                        </strong>
+
+                        {{ order.created_at|date:"d/m/Y H:i" }}
+                    </p>
+
+
+                    {% if order.note %}
+
+                        <p>
+
+                            <strong>
+                                Ghi chú:
+                            </strong>
+
+                            {{ order.note }}
+
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- DANH SÁCH SẢN PHẨM -->
+
+            <div class="order-box">
+
+                <h2>
+                    Sản phẩm
+                </h2>
+
+
+                <div class="order-items">
+
+                    {% for item in order.items.all %}
+
+                        <div class="order-item">
+
+                            <!-- ẢNH -->
+
+                            <div class="order-item-image">
+
+                                {% if item.book.image %}
+
+                                    <img
+                                        src="{{ item.book.image.url }}"
+                                        alt="{{ item.book.title }}"
+                                    >
+
+                                {% else %}
+
+                                    <div class="no-image">
+                                        Chưa có ảnh
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- THÔNG TIN -->
+
+                            <div class="order-item-info">
+
+                                <h3>
+                                    {{ item.book.title }}
+                                </h3>
+
+                                <p>
+                                    Đơn giá:
+
+                                    <strong>
+                                        {{ item.price|floatformat:0 }} ₫
+                                    </strong>
+                                </p>
+
+                                <p>
+                                    Số lượng:
+
+                                    <strong>
+                                        {{ item.quantity }}
+                                    </strong>
+                                </p>
+
+                            </div>
+
+
+                            <!-- THÀNH TIỀN -->
+
+                            <div class="order-item-subtotal">
+
+                                {{ item.subtotal|floatformat:0 }} ₫
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- TỔNG TIỀN -->
+
+                <div class="order-total">
+
+                    <span>
+                        Tổng tiền
+                    </span>
+
+                    <strong>
+                        {{ order.total_amount|floatformat:0 }} ₫
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- NÚT -->
+        <!-- ========================= -->
+
+        <div class="order-actions">
+
+            <a
+                href="{% url 'book_list' %}"
+                class="secondary-button"
+            >
+                TIẾP TỤC MUA SẮM
+            </a>
+
+
+            <a
+                href="{% url 'home' %}"
+                class="product-button"
+            >
+                VỀ TRANG CHỦ
+            </a>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,440 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}Alpha-books{% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'store/css/style.css' %}"
+    >
+
+</head>
+
+
+<body>
+
+<header class="header">
+
+    <div class="header-main">
+
+        <div class="container header-content">
+
+            <!-- LOGO -->
+
+            <div class="logo">
+
+                <a href="/">
+                    ALPHA-BOOKS
+                </a>
+
+                <span>
+                    TRI THỨC LÀ SỨC MẠNH
+                </span>
+
+            </div>
+
+
+            <!-- SEARCH -->
+
+            <div class="search">
+
+                <form
+                    method="get"
+                    action="{% url 'book_list' %}"
+                >
+
+                    <input
+                        type="text"
+                        name="q"
+                        placeholder="Tìm kiếm sách, tác giả..."
+                    >
+
+                    <button type="submit">
+                        🔍
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="header-actions">
+
+                {% if user.is_authenticated %}
+
+                    <!-- NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP -->
+
+                    <a
+                        href="{% url 'my_orders' %}"
+                        class="header-action"
+                    >
+
+                        <span class="header-action-icon">
+                            📦
+                        </span>
+
+                        <span>
+                            Đơn hàng
+                        </span>
+
+                    </a>
+
+
+                    <a
+                        href="{% url 'cart_detail' %}"
+                        class="header-action"
+                    >
+
+                        <span class="header-action-icon">
+                            🛒
+                        </span>
+
+                        <span>
+                            Giỏ hàng
+                        </span>
+
+                    </a>
+
+
+                    <a
+                        href="{% url 'logout' %}"
+                        class="header-action"
+                    >
+
+                        <span class="header-action-icon">
+                            🚪
+                        </span>
+
+                        <span>
+                            Đăng xuất
+                        </span>
+
+                    </a>
+
+                {% else %}
+
+                    <!-- KHÁCH VÃNG LAI -->
+
+                    <a
+                        href="{% url 'login' %}"
+                        class="header-action"
+                    >
+
+                        <span class="header-action-icon">
+                            👤
+                        </span>
+
+                        <span>
+                            Đăng nhập
+                        </span>
+
+                    </a>
+
+
+                    <a
+                        href="{% url 'register' %}"
+                        class="header-action"
+                    >
+
+                        <span class="header-action-icon">
+                            📝
+                        </span>
+
+                        <span>
+                            Đăng ký
+                        </span>
+
+                    </a>
+
+
+                    <a
+                        href="{% url 'login' %}"
+                        class="header-action"
+                    >
+
+                        <span class="header-action-icon">
+                            🛒
+                        </span>
+
+                        <span>
+                            Giỏ hàng
+                        </span>
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <nav class="navbar">
+
+        <div class="container nav-content">
+
+            <!-- DANH MỤC -->
+
+            <div class="category-menu">
+
+                <a href="{% url 'book_list' %}">
+                    ☰ &nbsp; TẤT CẢ DANH MỤC
+                </a>
+
+            </div>
+
+
+            <!-- MENU -->
+
+            <ul class="nav-list">
+
+                <li>
+                    <a href="{% url 'home' %}">
+                        Trang chủ
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="{% url 'book_list' %}">
+                        Sách mới
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="#">
+                        Sách bán chạy
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="#">
+                        Khuyến mãi
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="#">
+                        Review sách
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="{% url 'my_orders' %}">
+                        Tra cứu đơn hàng
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+    </nav>
+
+</header>
+
+
+<!-- MAIN -->
+
+<main>
+
+    {% block content %}
+    {% endblock %}
+
+</main>
+
+
+<!-- NEWSLETTER -->
+
+<section class="newsletter">
+
+    <div class="container newsletter-content">
+
+        <div class="newsletter-text">
+
+            <h2>
+                Đăng ký nhận khuyến mãi
+            </h2>
+
+            <p>
+                Nhận thông tin sách mới và chương trình ưu đãi.
+            </p>
+
+        </div>
+
+
+        <form
+            class="newsletter-form"
+            method="post"
+        >
+
+            {% csrf_token %}
+
+            <input
+                type="email"
+                name="email"
+                placeholder="Nhập địa chỉ email của bạn"
+            >
+
+            <button type="submit">
+                Gửi
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+    <div class="container">
+
+        <div class="footer-grid">
+
+
+            <!-- ALPHA-BOOKS -->
+
+            <div class="footer-column">
+
+                <h3>
+                    ALPHA-BOOKS
+                </h3>
+
+                <p>
+                    Website bán sách trực tuyến
+                    được xây dựng phục vụ đồ án
+                    website thương mại điện tử.
+                </p>
+
+                <p>
+                    Mang tri thức đến gần hơn
+                    với mọi độc giả.
+                </p>
+
+            </div>
+
+
+            <!-- HỖ TRỢ -->
+
+            <div class="footer-column">
+
+                <h3>
+                    Hỗ trợ khách hàng
+                </h3>
+
+                <a href="#">
+                    Hướng dẫn mua hàng
+                </a>
+
+                <a href="#">
+                    Chính sách bảo mật
+                </a>
+
+                <a href="#">
+                    Chính sách đổi trả
+                </a>
+
+                <a href="#">
+                    Chính sách vận chuyển
+                </a>
+
+            </div>
+
+
+            <!-- DANH MỤC -->
+
+            <div class="footer-column">
+
+                <h3>
+                    Danh mục
+                </h3>
+
+                <a href="{% url 'book_list' %}">
+                    Tất cả sách
+                </a>
+
+                <a href="#">
+                    Sách tư duy - kỹ năng
+                </a>
+
+                <a href="#">
+                    Sách kinh tế
+                </a>
+
+                <a href="#">
+                    Sách văn học
+                </a>
+
+                <a href="#">
+                    Sách công nghệ
+                </a>
+
+            </div>
+
+
+            <!-- LIÊN HỆ -->
+
+            <div class="footer-column">
+
+                <h3>
+                    Liên hệ
+                </h3>
+
+                <p>
+                    Hotline: 1900 0000
+                </p>
+
+                <p>
+                    Email: support@alpha-books.vn
+                </p>
+
+                <p>
+                    Việt Nam
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            © 2026 Alpha-books. All rights reserved.
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+</body>
+
+</html>

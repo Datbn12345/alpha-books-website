@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}
+Đơn hàng của tôi - Alpha-books
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <section class="section">
+
+        <h1 class="section-title">
+            Đơn hàng của tôi
+        </h1>
+
+
+        {% if orders %}
+
+            <div class="my-orders">
+
+                {% for order in orders %}
+
+                    <div class="my-order-card">
+
+                        <!-- THÔNG TIN ĐƠN -->
+
+                        <div class="my-order-header">
+
+                            <div>
+
+                                <h3>
+                                    Đơn hàng #{{ order.id }}
+                                </h3>
+
+                                <p>
+                                    Ngày đặt:
+                                    {{ order.created_at|date:"d/m/Y H:i" }}
+                                </p>
+
+                            </div>
+
+
+                            <div class="my-order-status">
+
+                                {{ order.get_status_display }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- SẢN PHẨM -->
+
+                        <div class="my-order-products">
+
+                            {% for item in order.items.all %}
+
+                                <div class="my-order-product">
+
+                                    <!-- ẢNH -->
+
+                                    <div class="my-order-image">
+
+                                        {% if item.book.image %}
+
+                                            <img
+                                                src="{{ item.book.image.url }}"
+                                                alt="{{ item.book.title }}"
+                                            >
+
+                                        {% else %}
+
+                                            <div class="no-image">
+                                                Chưa có ảnh
+                                            </div>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <!-- THÔNG TIN -->
+
+                                    <div class="my-order-product-info">
+
+                                        <h4>
+                                            {{ item.book.title }}
+                                        </h4>
+
+                                        <p>
+                                            Số lượng:
+                                            {{ item.quantity }}
+                                        </p>
+
+                                        <p>
+                                            Đơn giá:
+                                            {{ item.price|floatformat:0 }} ₫
+                                        </p>
+
+                                    </div>
+
+
+                                    <!-- THÀNH TIỀN -->
+
+                                    <div class="my-order-product-price">
+
+                                        {{ item.subtotal|floatformat:0 }} ₫
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- TỔNG TIỀN -->
+
+                        <div class="my-order-footer">
+
+                            <div>
+
+                                <strong>
+                                    Tổng tiền:
+                                </strong>
+
+                                <span class="my-order-total">
+                                    {{ order.total_amount|floatformat:0 }} ₫
+                                </span>
+
+                            </div>
+
+
+                            <a
+                                href="{% url 'order_detail' order.id %}"
+                                class="product-button"
+                            >
+                                XEM CHI TIẾT
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+            <div class="empty-books">
+
+                <h3>
+                    Bạn chưa có đơn hàng nào
+                </h3>
+
+                <p>
+                    Hãy chọn một cuốn sách và bắt đầu mua sắm.
+                </p>
+
+                <a
+                    href="{% url 'book_list' %}"
+                    class="product-button"
+                >
+                    XEM SÁCH
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

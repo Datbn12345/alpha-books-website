@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ book.title }} - Alpha-books
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <section class="book-detail">
+
+        <!-- ẢNH SÁCH -->
+        <div class="book-detail-image">
+
+            {% if book.image %}
+
+                <img
+                    src="{{ book.image.url }}"
+                    alt="{{ book.title }}"
+                >
+
+            {% else %}
+
+                <div class="no-image">
+                    Chưa có ảnh
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- THÔNG TIN -->
+        <div class="book-detail-info">
+
+            <h1>
+                {{ book.title }}
+            </h1>
+
+            <div class="book-detail-price">
+
+                <span class="current-price">
+                    {{ book.price|floatformat:0 }} ₫
+                </span>
+
+                {% if book.original_price %}
+
+                    <span class="original-price">
+                        {{ book.original_price|floatformat:0 }} ₫
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="book-meta">
+
+                <p>
+                    <strong>ISBN:</strong>
+                    {{ book.isbn }}
+                </p>
+
+                <p>
+                    <strong>Danh mục:</strong>
+                    {{ book.category.name }}
+                </p>
+
+                <p>
+                    <strong>Nhà xuất bản:</strong>
+                    {{ book.publisher.name }}
+                </p>
+
+                {% if book.publication_year %}
+
+                    <p>
+                        <strong>Năm xuất bản:</strong>
+                        {{ book.publication_year }}
+                    </p>
+
+                {% endif %}
+
+                <p>
+                    <strong>Số lượng còn lại:</strong>
+                    {{ book.stock }}
+                </p>
+
+            </div>
+
+
+            <!-- TÁC GIẢ -->
+
+            <div class="book-authors">
+
+                <strong>Tác giả:</strong>
+
+                {% for author in book.authors.all %}
+
+                    <span>
+                        {{ author.name }}
+                    </span>
+
+                    {% if not forloop.last %}
+                        ,
+                    {% endif %}
+
+                {% empty %}
+
+                    Chưa cập nhật
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- NÚT GIỎ HÀNG -->
+
+            {% if book.stock > 0 %}
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <div class="quantity">
+
+                        <label for="quantity">
+                            Số lượng:
+                        </label>
+
+                        <input
+                            type="number"
+                            id="quantity"
+                            name="quantity"
+                            value="1"
+                            min="1"
+                            max="{{ book.stock }}"
+                        >
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="add-cart-button"
+                    >
+                        THÊM VÀO GIỎ HÀNG
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <button
+                    class="add-cart-button disabled"
+                    disabled
+                >
+                    HẾT HÀNG
+                </button>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    <!-- MÔ TẢ -->
+
+    <section class="book-description">
+
+        <h2>
+            Mô tả sách
+        </h2>
+
+        {% if book.description %}
+
+            <p>
+                {{ book.description|linebreaks }}
+            </p>
+
+        {% else %}
+
+            <p>
+                Chưa có mô tả cho sách này.
+            </p>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}
+Giỏ hàng - Alpha-books
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <section class="section">
+
+        <h1 class="section-title">
+            Giỏ hàng
+        </h1>
+
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="form-success">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+
+        {% if items %}
+
+            <div class="cart-list">
+
+                {% for item in items %}
+
+                    <div class="cart-item">
+
+                        <!-- ẢNH -->
+
+                        <div class="cart-image">
+
+                            {% if item.book.image %}
+
+                                <img
+                                    src="{{ item.book.image.url }}"
+                                    alt="{{ item.book.title }}"
+                                >
+
+                            {% else %}
+
+                                <div class="no-image">
+                                    Chưa có ảnh
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- THÔNG TIN -->
+
+                        <div class="cart-info">
+
+                            <h3>
+                                {{ item.book.title }}
+                            </h3>
+
+
+                            <p>
+                                Đơn giá:
+                                <strong>
+                                    {{ item.book.price|floatformat:0 }} ₫
+                                </strong>
+                            </p>
+
+
+                            <!-- CẬP NHẬT SỐ LƯỢNG -->
+
+                            <form
+                                method="POST"
+                                action="{% url 'cart_update' item.id %}"
+                                class="cart-quantity-form"
+                            >
+
+                                {% csrf_token %}
+
+                                <label>
+                                    Số lượng:
+                                </label>
+
+
+                                <div class="quantity-control">
+
+                                    <button
+                                        type="button"
+                                        onclick="changeQuantity(this, -1)"
+                                    >
+                                        −
+                                    </button>
+
+
+                                    <input
+                                        type="number"
+                                        name="quantity"
+                                        value="{{ item.quantity }}"
+                                        min="1"
+                                        max="{{ item.book.stock }}"
+                                    >
+
+
+                                    <button
+                                        type="button"
+                                        onclick="changeQuantity(this, 1)"
+                                    >
+                                        +
+                                    </button>
+
+                                </div>
+
+
+                                <button
+                                    type="submit"
+                                    class="update-cart-button"
+                                >
+                                    Cập nhật
+                                </button>
+
+                            </form>
+
+
+                            <!-- THÀNH TIỀN -->
+
+                            <p>
+
+                                Thành tiền:
+
+                                <strong>
+
+                                    {{ item.book.price|floatformat:0 }}
+                                    ₫
+                                    ×
+                                    {{ item.quantity }}
+
+                                </strong>
+
+                            </p>
+
+
+                            <!-- XÓA -->
+
+                            <form
+                                method="POST"
+                                action="{% url 'cart_remove' item.id %}"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="remove-cart-button"
+                                >
+                                    🗑 Xóa khỏi giỏ hàng
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- TỔNG TIỀN -->
+
+            <div class="cart-summary">
+
+                <h2>
+
+                    Tổng tiền:
+
+                    {{ total|floatformat:0 }} ₫
+
+                </h2>
+
+
+                <div class="cart-summary-actions">
+
+                    <a
+                        href="{% url 'book_list' %}"
+                        class="secondary-button"
+                    >
+                        TIẾP TỤC MUA HÀNG
+                    </a>
+
+
+                    <a
+                        href="{% url 'checkout' %}"
+                        class="product-button"
+                    >
+                        TIẾN HÀNH ĐẶT HÀNG
+                    </a>
+
+                </div>
+
+            </div>
+
+
+        {% else %}
+
+            <!-- GIỎ HÀNG TRỐNG -->
+
+            <div class="empty-books">
+
+                <h3>
+                    Giỏ hàng đang trống
+                </h3>
+
+                <p>
+                    Hãy chọn một cuốn sách để bắt đầu mua hàng.
+                </p>
+
+
+                <a
+                    href="{% url 'book_list' %}"
+                    class="product-button"
+                >
+                    XEM SÁCH
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+
+<script>
+
+function changeQuantity(button, amount) {
+
+    const form = button.closest(
+        ".cart-quantity-form"
+    );
+
+    const input = form.querySelector(
+        'input[name="quantity"]'
+    );
+
+    let value = parseInt(
+        input.value
+    ) || 1;
+
+
+    const min = parseInt(
+        input.min
+    ) || 1;
+
+
+    const max = parseInt(
+        input.max
+    );
+
+
+    value += amount;
+
+
+    if (value < min) {
+
+        value = min;
+
+    }
+
+
+    if (!isNaN(max) && value > max) {
+
+        value = max;
+
+    }
+
+
+    input.value = value;
+
+}
+
+</script>
+
+{% endblock %}

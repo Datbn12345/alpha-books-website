@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block title %}
+Đặt hàng - Alpha-books
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <section class="section">
+
+        <h1 class="section-title">
+            Đặt hàng
+        </h1>
+
+
+        {% if error %}
+
+            <div class="form-error">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+
+        <div class="checkout-layout">
+
+            <!-- ========================= -->
+            <!-- THÔNG TIN NHẬN HÀNG -->
+            <!-- ========================= -->
+
+            <div class="checkout-form">
+
+                <h2>
+                    Thông tin nhận hàng
+                </h2>
+
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+
+                    <!-- HỌ TÊN -->
+
+                    <div class="form-group">
+
+                        <label for="full_name">
+                            Họ và tên *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="full_name"
+                            name="full_name"
+                            value="{{ request.user.get_full_name }}"
+                            placeholder="Nhập họ và tên người nhận"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- SỐ ĐIỆN THOẠI -->
+
+                    <div class="form-group">
+
+                        <label for="phone">
+                            Số điện thoại *
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="Nhập số điện thoại"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- ĐỊA CHỈ -->
+
+                    <div class="form-group">
+
+                        <label for="address">
+                            Địa chỉ nhận hàng *
+                        </label>
+
+                        <textarea
+                            id="address"
+                            name="address"
+                            rows="4"
+                            placeholder="Nhập địa chỉ nhận hàng"
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- PHƯƠNG THỨC THANH TOÁN -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Phương thức thanh toán
+                        </label>
+
+
+                        <div class="payment-options">
+
+                            <label class="payment-option">
+
+                                <input
+                                    type="radio"
+                                    name="payment_method"
+                                    value="cod"
+                                    checked
+                                >
+
+                                <span>
+                                    💵 Thanh toán khi nhận hàng (COD)
+                                </span>
+
+                            </label>
+
+
+                            <label class="payment-option">
+
+                                <input
+                                    type="radio"
+                                    name="payment_method"
+                                    value="bank"
+                                >
+
+                                <span>
+                                    🏦 Chuyển khoản ngân hàng
+                                </span>
+
+                            </label>
+
+
+                            <label class="payment-option">
+
+                                <input
+                                    type="radio"
+                                    name="payment_method"
+                                    value="momo"
+                                >
+
+                                <span>
+                                    📱 Ví MoMo
+                                </span>
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- GHI CHÚ -->
+
+                    <div class="form-group">
+
+                        <label for="note">
+                            Ghi chú đơn hàng
+                        </label>
+
+                        <textarea
+                            id="note"
+                            name="note"
+                            rows="3"
+                            placeholder="Ví dụ: Giao hàng giờ hành chính..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- NÚT -->
+
+                    <div class="checkout-actions">
+
+                        <a
+                            href="{% url 'cart_detail' %}"
+                            class="secondary-button"
+                        >
+                            ← QUAY LẠI GIỎ HÀNG
+                        </a>
+
+
+                        <button
+                            type="submit"
+                            class="product-button"
+                        >
+                            XÁC NHẬN ĐẶT HÀNG
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- TÓM TẮT ĐƠN HÀNG -->
+            <!-- ========================= -->
+
+            <div class="checkout-summary">
+
+                <h2>
+                    Đơn hàng của bạn
+                </h2>
+
+
+                <div class="checkout-items">
+
+                    {% for item in items %}
+
+                        <div class="checkout-item">
+
+                            <!-- ẢNH -->
+
+                            <div class="checkout-item-image">
+
+                                {% if item.book.image %}
+
+                                    <img
+                                        src="{{ item.book.image.url }}"
+                                        alt="{{ item.book.title }}"
+                                    >
+
+                                {% else %}
+
+                                    <div class="no-image">
+                                        Chưa có ảnh
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- THÔNG TIN -->
+
+                            <div class="checkout-item-info">
+
+                                <h3>
+                                    {{ item.book.title }}
+                                </h3>
+
+                                <p>
+                                    Số lượng:
+                                    <strong>
+                                        {{ item.quantity }}
+                                    </strong>
+                                </p>
+
+                                <p>
+                                    Đơn giá:
+                                    <strong>
+                                        {{ item.book.price|floatformat:0 }} ₫
+                                    </strong>
+                                </p>
+
+                            </div>
+
+
+                            <!-- THÀNH TIỀN -->
+
+                            <div class="checkout-item-price">
+
+                                {{ item.book.price|floatformat:0 }} ₫
+
+                                ×
+
+                                {{ item.quantity }}
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- TỔNG -->
+
+                <div class="checkout-total">
+
+                    <span>
+                        Tổng tiền
+                    </span>
+
+                    <strong>
+                        {{ total|floatformat:0 }} ₫
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}
