@@ -1,0 +1,180 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n static %}
+
+{% block title %}
+    {% if subtitle %}
+        {{ subtitle }} |
+    {% endif %}
+    {{ site_title|default:_('Django site admin') }}
+{% endblock %}
+
+
+{% block branding %}
+
+<h1 id="site-name">
+
+    <a href="{% url 'admin:index' %}">
+        {{ site_header|default:_('Django administration') }}
+    </a>
+
+</h1>
+
+{% endblock %}
+
+
+{% block nav-global %}
+{% endblock %}
+
+
+{% block content %}
+
+<div id="content-main">
+
+
+    <!-- =====================================================
+         NÚT THỐNG KÊ
+    ====================================================== -->
+
+    <div style="
+        margin-bottom: 25px;
+        padding: 20px;
+        background: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    ">
+
+        <h2 style="
+            margin-top: 0;
+            margin-bottom: 8px;
+        ">
+            📊 Thống kê bán hàng
+        </h2>
+
+
+        <p style="
+            margin-bottom: 18px;
+            color: #666;
+        ">
+            Xem tổng quan doanh thu, đơn hàng,
+            sách bán chạy, tồn kho và đánh giá.
+        </p>
+
+
+        <a
+            href="{% url 'statistics' %}"
+            style="
+                display: inline-block;
+                padding: 10px 18px;
+                background: #417690;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+            "
+        >
+            📈 Xem thống kê
+        </a>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         DANH SÁCH CÁC MODEL ADMIN
+    ====================================================== -->
+
+    {% if app_list %}
+
+        {% for app in app_list %}
+
+            <div class="app-{{ app.app_label }} module">
+
+                <table>
+
+                    <caption>
+
+                        <a
+                            href="{{ app.app_url }}"
+                            class="section"
+                            title="{% translate 'Models in the' %} {{ app.name }}"
+                        >
+                            {{ app.name }}
+                        </a>
+
+                    </caption>
+
+
+                    {% for model in app.models %}
+
+                        <tr class="model-{{ model.object_name|lower }}">
+
+                            <th scope="row">
+
+                                {% if model.admin_url %}
+
+                                    <a href="{{ model.admin_url }}">
+                                        {{ model.name }}
+                                    </a>
+
+                                {% else %}
+
+                                    {{ model.name }}
+
+                                {% endif %}
+
+                            </th>
+
+
+                            <td>
+
+                                {% if model.add_url %}
+
+                                    <a
+                                        href="{{ model.add_url }}"
+                                        class="addlink"
+                                    >
+                                        {% translate 'Add' %}
+                                    </a>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if model.admin_url %}
+
+                                    <a
+                                        href="{{ model.admin_url }}"
+                                        class="changelink"
+                                    >
+                                        {% translate 'Change' %}
+                                    </a>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </table>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>
+            {% translate "You don't have permission to view or edit anything." %}
+        </p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

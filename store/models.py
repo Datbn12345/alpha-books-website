@@ -109,6 +109,22 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+    @property
+    def discount_percent(self):
+        if (
+            self.original_price
+            and self.original_price > self.price
+            and self.price > 0
+        ):
+            discount = (
+                (self.original_price - self.price)
+                / self.original_price
+            ) * 100
+
+            return round(discount)
+
+        return 0
+
 
 class Cart(models.Model):
     user = models.OneToOneField(

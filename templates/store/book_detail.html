@@ -1,193 +1,806 @@
 {% extends "base.html" %}
 
 {% block title %}
-{{ book.title }} - Alpha-books
+{{ book.title }} - Alpha Books
 {% endblock %}
 
 {% block content %}
 
-<div class="container">
+<div class="detail-page">
 
-    <section class="book-detail">
+    <div class="container">
 
-        <!-- ẢNH SÁCH -->
-        <div class="book-detail-image">
+        <!-- BREADCRUMB -->
+        <nav class="detail-breadcrumb">
+            <a href="{% url 'home' %}">Trang chủ</a>
+            <span>›</span>
+            <a href="{% url 'book_list' %}">Sách</a>
+            <span>›</span>
+            <span>{{ book.title }}</span>
+        </nav>
 
-            {% if book.image %}
 
-                <img
-                    src="{{ book.image.url }}"
-                    alt="{{ book.title }}"
-                >
+        <!-- =========================================
+             THÔNG TIN CHÍNH
+        ========================================== -->
 
-            {% else %}
+        <section class="detail-main">
 
-                <div class="no-image">
-                    Chưa có ảnh
+            <!-- ẢNH SÁCH -->
+            <div class="detail-image-column">
+
+                <div class="detail-image-card">
+
+                    {% if book.original_price and book.original_price > book.price %}
+                        <span class="detail-sale-badge">
+                            -{{ book.discount_percent }}%
+                        </span>
+                    {% endif %}
+
+                    {% if book.image %}
+
+                        <img
+                            src="{{ book.image.url }}"
+                            alt="{{ book.title }}"
+                            class="detail-book-image"
+                        >
+
+                    {% else %}
+
+                        <div class="detail-no-image">
+                            <span>📚</span>
+                            <p>Chưa có ảnh sách</p>
+                        </div>
+
+                    {% endif %}
+
                 </div>
 
-            {% endif %}
 
-        </div>
+                <div class="detail-trust">
 
+                    <div>
+                        <span class="detail-trust-icon">✓</span>
+                        <span>Sách chính hãng</span>
+                    </div>
 
-        <!-- THÔNG TIN -->
-        <div class="book-detail-info">
+                    <div>
+                        <span class="detail-trust-icon">✓</span>
+                        <span>Đóng gói cẩn thận</span>
+                    </div>
 
-            <h1>
-                {{ book.title }}
-            </h1>
-
-            <div class="book-detail-price">
-
-                <span class="current-price">
-                    {{ book.price|floatformat:0 }} ₫
-                </span>
-
-                {% if book.original_price %}
-
-                    <span class="original-price">
-                        {{ book.original_price|floatformat:0 }} ₫
-                    </span>
-
-                {% endif %}
+                </div>
 
             </div>
 
 
-            <div class="book-meta">
+            <!-- THÔNG TIN -->
+            <div class="detail-info-column">
 
-                <p>
-                    <strong>ISBN:</strong>
-                    {{ book.isbn }}
-                </p>
-
-                <p>
-                    <strong>Danh mục:</strong>
+                <div class="detail-category">
                     {{ book.category.name }}
-                </p>
+                </div>
 
-                <p>
-                    <strong>Nhà xuất bản:</strong>
-                    {{ book.publisher.name }}
-                </p>
 
-                {% if book.publication_year %}
+                <h1 class="detail-title">
+                    {{ book.title }}
+                </h1>
 
-                    <p>
-                        <strong>Năm xuất bản:</strong>
-                        {{ book.publication_year }}
+
+                <!-- ĐÁNH GIÁ -->
+                <div class="detail-rating-row">
+
+                    {% if review_count > 0 %}
+
+                        <span class="detail-rating-stars">
+                            ★ {{ average_rating|floatformat:1 }}
+                        </span>
+
+                        <a
+                            href="#detail-reviews"
+                            class="detail-review-link"
+                        >
+                            {{ review_count }} đánh giá
+                        </a>
+
+                    {% else %}
+
+                        <span class="detail-no-rating">
+                            Chưa có đánh giá
+                        </span>
+
+                    {% endif %}
+
+                    <span class="detail-divider">|</span>
+
+                    <span class="detail-sku">
+                        ISBN: {{ book.isbn }}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-separator"></div>
+
+
+                <!-- GIÁ -->
+                <div class="detail-price-area">
+
+                    <span class="detail-current-price">
+                        {{ book.price|floatformat:0 }} ₫
+                    </span>
+
+                    {% if book.original_price and book.original_price > book.price %}
+
+                        <span class="detail-original-price">
+                            {{ book.original_price|floatformat:0 }} ₫
+                        </span>
+
+                        <span class="detail-discount">
+                            -{{ book.discount_percent }}%
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- THÔNG TIN CƠ BẢN -->
+                <div class="detail-quick-info">
+
+                    <div class="detail-info-row">
+
+                        <span class="detail-info-label">
+                            Tác giả
+                        </span>
+
+                        <span class="detail-info-value">
+
+                            {% for author in book.authors.all %}
+
+                                {{ author.name }}{% if not forloop.last %}, {% endif %}
+
+                            {% empty %}
+
+                                Chưa cập nhật
+
+                            {% endfor %}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail-info-row">
+
+                        <span class="detail-info-label">
+                            Nhà xuất bản
+                        </span>
+
+                        <span class="detail-info-value">
+                            {{ book.publisher.name }}
+                        </span>
+
+                    </div>
+
+
+                    {% if book.publication_year %}
+
+                        <div class="detail-info-row">
+
+                            <span class="detail-info-label">
+                                Năm xuất bản
+                            </span>
+
+                            <span class="detail-info-value">
+                                {{ book.publication_year }}
+                            </span>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <div class="detail-info-row">
+
+                        <span class="detail-info-label">
+                            Tình trạng
+                        </span>
+
+                        <span class="detail-info-value">
+
+                            {% if book.stock > 0 %}
+
+                                <span class="detail-stock-in">
+                                    ● Còn hàng
+                                </span>
+
+                            {% else %}
+
+                                <span class="detail-stock-out">
+                                    ● Hết hàng
+                                </span>
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =====================================
+                     MUA HÀNG
+                ====================================== -->
+
+                <div class="detail-buy-box">
+
+                    {% if book.stock > 0 %}
+
+                        <div class="detail-stock-note">
+                            ✓ Còn {{ book.stock }} sản phẩm trong kho
+                        </div>
+
+
+                        <form
+                            method="POST"
+                            action="{% url 'book_detail' book.id %}"
+                            class="detail-cart-form"
+                        >
+
+                            {% csrf_token %}
+
+
+                            <div class="detail-quantity-group">
+
+                                <label for="detail-quantity">
+                                    Số lượng
+                                </label>
+
+                                <div class="detail-quantity-control">
+
+                                    <button
+                                        type="button"
+                                        class="detail-quantity-btn"
+                                        onclick="changeDetailQuantity(-1)"
+                                    >
+                                        −
+                                    </button>
+
+
+                                    <input
+                                        type="number"
+                                        id="detail-quantity"
+                                        name="quantity"
+                                        value="1"
+                                        min="1"
+                                        max="{{ book.stock }}"
+                                    >
+
+
+                                    <button
+                                        type="button"
+                                        class="detail-quantity-btn"
+                                        onclick="changeDetailQuantity(1)"
+                                    >
+                                        +
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="detail-add-cart"
+                            >
+                                🛒 THÊM VÀO GIỎ HÀNG
+                            </button>
+
+                        </form>
+
+                    {% else %}
+
+                        <div class="detail-out-of-stock">
+
+                            <strong>HẾT HÀNG</strong>
+
+                            <span>
+                                Sản phẩm hiện chưa có sẵn để đặt mua.
+                            </span>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             THÔNG TIN SẢN PHẨM
+        ========================================== -->
+
+        <section class="detail-content-card">
+
+            <div class="detail-section-heading">
+
+                <span class="detail-heading-line"></span>
+
+                <h2>
+                    Thông tin sản phẩm
+                </h2>
+
+            </div>
+
+
+            <div class="detail-spec-grid">
+
+                <div class="detail-spec-item">
+                    <span>ISBN</span>
+                    <strong>{{ book.isbn }}</strong>
+                </div>
+
+
+                <div class="detail-spec-item">
+                    <span>Danh mục</span>
+                    <strong>{{ book.category.name }}</strong>
+                </div>
+
+
+                <div class="detail-spec-item">
+                    <span>Nhà xuất bản</span>
+                    <strong>{{ book.publisher.name }}</strong>
+                </div>
+
+
+                <div class="detail-spec-item">
+
+                    <span>
+                        Năm xuất bản
+                    </span>
+
+                    <strong>
+
+                        {% if book.publication_year %}
+                            {{ book.publication_year }}
+                        {% else %}
+                            Chưa cập nhật
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-spec-item detail-spec-full">
+
+                    <span>
+                        Tác giả
+                    </span>
+
+                    <strong>
+
+                        {% for author in book.authors.all %}
+
+                            {{ author.name }}{% if not forloop.last %}, {% endif %}
+
+                        {% empty %}
+
+                            Chưa cập nhật
+
+                        {% endfor %}
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             MÔ TẢ
+        ========================================== -->
+
+        <section class="detail-content-card">
+
+            <div class="detail-section-heading">
+
+                <span class="detail-heading-line"></span>
+
+                <h2>
+                    Mô tả sách
+                </h2>
+
+            </div>
+
+
+            <div class="detail-description">
+
+                {% if book.description %}
+
+                    {{ book.description|linebreaks }}
+
+                {% else %}
+
+                    <p class="detail-empty-text">
+                        Chưa có mô tả cho sách này.
                     </p>
 
                 {% endif %}
 
-                <p>
-                    <strong>Số lượng còn lại:</strong>
-                    {{ book.stock }}
-                </p>
-
             </div>
 
+        </section>
 
-            <!-- TÁC GIẢ -->
 
-            <div class="book-authors">
+        <!-- =========================================
+             ĐÁNH GIÁ
+        ========================================== -->
 
-                <strong>Tác giả:</strong>
+        <section
+            class="detail-content-card detail-reviews-section"
+            id="detail-reviews"
+        >
 
-                {% for author in book.authors.all %}
+            <div class="detail-section-heading">
 
-                    <span>
-                        {{ author.name }}
+                <span class="detail-heading-line"></span>
+
+                <h2>
+                    Đánh giá sách
+                </h2>
+
+                {% if review_count > 0 %}
+
+                    <span class="detail-review-count">
+                        {{ review_count }} đánh giá
                     </span>
 
-                    {% if not forloop.last %}
-                        ,
-                    {% endif %}
-
-                {% empty %}
-
-                    Chưa cập nhật
-
-                {% endfor %}
+                {% endif %}
 
             </div>
 
 
-            <!-- NÚT GIỎ HÀNG -->
+            <!-- TỔNG QUAN -->
+            <div class="detail-review-summary">
 
-            {% if book.stock > 0 %}
+                <div class="detail-rating-big">
 
-                <form method="POST">
+                    {% if review_count > 0 %}
 
-                    {% csrf_token %}
+                        <strong>
+                            {{ average_rating|floatformat:1 }}
+                        </strong>
 
-                    <div class="quantity">
+                        <div class="detail-big-stars">
 
-                        <label for="quantity">
-                            Số lượng:
-                        </label>
+                            {% if average_rating >= 1 %}★{% endif %}
+                            {% if average_rating >= 2 %}★{% endif %}
+                            {% if average_rating >= 3 %}★{% endif %}
+                            {% if average_rating >= 4 %}★{% endif %}
+                            {% if average_rating >= 5 %}★{% endif %}
 
-                        <input
-                            type="number"
-                            id="quantity"
-                            name="quantity"
-                            value="1"
-                            min="1"
-                            max="{{ book.stock }}"
-                        >
+                        </div>
+
+                        <span>
+                            Dựa trên {{ review_count }} đánh giá
+                        </span>
+
+                    {% else %}
+
+                        <strong>—</strong>
+
+                        <span>
+                            Chưa có đánh giá
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="detail-review-summary-text">
+
+                    <strong>
+                        Cảm nhận của độc giả
+                    </strong>
+
+                    <p>
+                        Những đánh giá thực tế giúp khách hàng có thêm
+                        thông tin trước khi lựa chọn cuốn sách.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- FORM REVIEW -->
+            {% if user.is_authenticated %}
+
+                <div class="detail-review-form">
+
+                    <div class="detail-form-title">
+
+                        {% if user_review %}
+                            Cập nhật đánh giá của bạn
+                        {% else %}
+                            Viết đánh giá của bạn
+                        {% endif %}
 
                     </div>
 
-                    <button
-                        type="submit"
-                        class="add-cart-button"
-                    >
-                        THÊM VÀO GIỎ HÀNG
-                    </button>
 
-                </form>
+                    <form
+                        method="POST"
+                        action="{% url 'add_review' book.id %}"
+                    >
+
+                        {% csrf_token %}
+
+
+                        <div class="detail-rating-select">
+
+                            <label>
+                                Đánh giá
+                            </label>
+
+
+                            <div class="detail-star-options">
+
+                                {% for star in "12345" %}
+
+                                    <label class="detail-star-option">
+
+                                        <input
+                                            type="radio"
+                                            name="rating"
+                                            value="{{ star }}"
+                                            {% if user_review and user_review.rating|stringformat:"s" == star %}
+                                                checked
+                                            {% endif %}
+                                            required
+                                        >
+
+                                        <span>
+                                            {{ star }} ★
+                                        </span>
+
+                                    </label>
+
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="detail-comment-field">
+
+                            <label for="detail-comment">
+                                Nhận xét
+                            </label>
+
+                            <textarea
+                                id="detail-comment"
+                                name="comment"
+                                rows="5"
+                                placeholder="Hãy chia sẻ cảm nhận của bạn về cuốn sách..."
+                            >{% if user_review %}{{ user_review.comment }}{% endif %}</textarea>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="detail-review-submit"
+                        >
+
+                            {% if user_review %}
+                                CẬP NHẬT ĐÁNH GIÁ
+                            {% else %}
+                                GỬI ĐÁNH GIÁ
+                            {% endif %}
+
+                        </button>
+
+                    </form>
+
+                </div>
 
             {% else %}
 
-                <button
-                    class="add-cart-button disabled"
-                    disabled
-                >
-                    HẾT HÀNG
-                </button>
+                <div class="detail-review-login">
+
+                    <div>
+
+                        <strong>
+                            Muốn chia sẻ cảm nhận của bạn?
+                        </strong>
+
+                        <p>
+                            Đăng nhập để viết đánh giá cho cuốn sách này.
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="{% url 'login' %}?next=/books/{{ book.id }}/#detail-reviews"
+                        class="detail-review-login-btn"
+                    >
+                        ĐĂNG NHẬP
+                    </a>
+
+                </div>
 
             {% endif %}
 
-        </div>
 
-    </section>
+            <!-- DANH SÁCH REVIEW -->
+            <div class="detail-review-list">
+
+                <h3>
+                    Nhận xét từ độc giả
+                </h3>
 
 
-    <!-- MÔ TẢ -->
+                {% if reviews %}
 
-    <section class="book-description">
+                    {% for review in reviews %}
 
-        <h2>
-            Mô tả sách
-        </h2>
+                        <article class="detail-review-item">
 
-        {% if book.description %}
+                            <div class="detail-review-avatar">
+                                {{ review.user.username|first|upper }}
+                            </div>
 
-            <p>
-                {{ book.description|linebreaks }}
-            </p>
 
-        {% else %}
+                            <div class="detail-review-body">
 
-            <p>
-                Chưa có mô tả cho sách này.
-            </p>
+                                <div class="detail-review-header">
 
-        {% endif %}
+                                    <div>
 
-    </section>
+                                        <strong>
+                                            {{ review.user.username }}
+                                        </strong>
+
+                                        <div class="detail-review-stars">
+
+                                            {% if review.rating >= 1 %}★{% endif %}
+                                            {% if review.rating >= 2 %}★{% endif %}
+                                            {% if review.rating >= 3 %}★{% endif %}
+                                            {% if review.rating >= 4 %}★{% endif %}
+                                            {% if review.rating >= 5 %}★{% endif %}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <time>
+                                        {{ review.created_at|date:"d/m/Y H:i" }}
+                                    </time>
+
+                                </div>
+
+
+                                {% if review.comment %}
+
+                                    <div class="detail-review-comment">
+                                        {{ review.comment|linebreaks }}
+                                    </div>
+
+                                {% else %}
+
+                                    <div class="detail-review-no-comment">
+                                        Người dùng đã đánh giá cuốn sách này.
+                                    </div>
+
+                                {% endif %}
+
+
+                                {% if user.is_authenticated and review.user == user %}
+
+                                    <div class="detail-review-actions">
+
+                                        <form
+                                            method="POST"
+                                            action="{% url 'delete_review' book.id %}"
+                                        >
+
+                                            {% csrf_token %}
+
+                                            <button
+                                                type="submit"
+                                                onclick="return confirm('Bạn có chắc muốn xóa đánh giá này không?');"
+                                            >
+                                                🗑 Xóa đánh giá
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </article>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="detail-empty-reviews">
+
+                        <div class="detail-empty-icon">
+                            ☆
+                        </div>
+
+                        <strong>
+                            Chưa có đánh giá nào
+                        </strong>
+
+                        <p>
+                            Hãy là người đầu tiên chia sẻ cảm nhận
+                            về cuốn sách này.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+    </div>
 
 </div>
+
+
+<script>
+
+function changeDetailQuantity(amount) {
+
+    const input = document.getElementById("detail-quantity");
+
+    if (!input) {
+        return;
+    }
+
+    const min = parseInt(input.min || "1", 10);
+    const max = parseInt(input.max || "999999", 10);
+
+    let value = parseInt(input.value || "1", 10);
+
+    if (Number.isNaN(value)) {
+        value = min;
+    }
+
+    value += amount;
+
+    if (value < min) {
+        value = min;
+    }
+
+    if (value > max) {
+        value = max;
+    }
+
+    input.value = value;
+}
+
+</script>
 
 {% endblock %}

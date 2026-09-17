@@ -1,208 +1,485 @@
 {% extends "base.html" %}
 
-
 {% block title %}
-Trang chủ - Alpha-books
+Trang chủ - Alpha Books
 {% endblock %}
-
 
 {% block content %}
 
-
-<div class="container">
-
-
-    <!-- HERO -->
-
-    <section class="hero">
-
-        <div class="hero-box">
-
-            <div class="hero-content">
-
-                <h1>
-                    Khám phá thế giới sách
-                </h1>
-
-                <p>
-                    Những cuốn sách hay giúp bạn
-                    mở rộng kiến thức, phát triển
-                    bản thân và khám phá thế giới.
-                </p>
-
-                <a href="#" class="hero-button">
-                    KHÁM PHÁ SÁCH
-                </a>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- CATEGORY -->
-
-    <section class="section">
-
-        <h2 class="section-title">
-            Danh mục sách
-        </h2>
-
-
-        <div class="category-grid">
-
-            {% for category in categories %}
-
-                <a href="#" class="category-card">
-
-                    <h3>
-                        {{ category.name }}
-                    </h3>
-
-                    {% if category.description %}
-
-                        <p>
-                            {{ category.description }}
-                        </p>
-
-                    {% else %}
-
-                        <p>
-                            Khám phá những cuốn sách
-                            thuộc danh mục này.
-                        </p>
-
-                    {% endif %}
-
-                </a>
-
-
-            {% empty %}
-
-                <p>
-                    Chưa có danh mục sách.
-                </p>
-
-            {% endfor %}
-
-        </div>
-
-    </section>
-
-
-
-    <!-- FEATURED BOOKS -->
-
-    <section class="section">
-
-        <h2 class="section-title">
-            Sách nổi bật
-        </h2>
-
-
-        <div class="product-grid">
-
-
-            {% for book in books %}
-
-                <div class="product-card">
-
-
-                    <div class="product-image">
-
-                        {% if book.image %}
-
-                            <img
-                                src="{{ book.image.url }}"
-                                alt="{{ book.title }}"
-                            >
-
-                        {% else %}
-
-                            <div class="no-image">
-                                Chưa có ảnh
-                            </div>
-
-                        {% endif %}
-
-                    </div>
-
-
-                    <div class="product-info">
-
-
-                        <a href="#"
-                           class="product-title">
-
-                            {{ book.title }}
-
-                        </a>
-
-
-                        <div class="product-price">
-
-                            <span class="current-price">
-
-                                {{ book.price|floatformat:0 }} ₫
-
-                            </span>
-
-
-                            {% if book.original_price %}
-
-                                <span class="original-price">
-
-                                    {{ book.original_price|floatformat:0 }} ₫
-
-                                </span>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        {% if book.original_price %}
-
-                            <span class="product-discount">
-
-                                Giảm giá
-
-                            </span>
-
-                        {% endif %}
-
-
-                        <a href="#"
-                           class="product-button">
-
-                            XEM CHI TIẾT
-
-                        </a>
-
-
-                    </div>
-
+<div class="home-page">
+
+    <!-- =========================
+         HERO CAROUSEL
+    ========================== -->
+    <section class="home-hero">
+        <div class="home-hero-slides">
+
+            <article class="home-hero-slide active">
+                <div class="home-hero-content">
+                    <span class="home-hero-badge">ALPHA BOOKS</span>
+                    <h1>Khám phá thế giới<br><strong>qua từng trang sách</strong></h1>
+                    <p>
+                        Hàng nghìn đầu sách chất lượng về kiến thức, kỹ năng,
+                        lịch sử, ngoại ngữ và phát triển bản thân.
+                    </p>
+                    <a href="{% url 'book_list' %}" class="home-hero-btn">
+                        KHÁM PHÁ SÁCH <span>→</span>
+                    </a>
                 </div>
 
+                <div class="home-hero-visual">
+                    {% if books %}
+                        {% with book=books.0 %}
+                            {% if book.image %}
+                                <div class="hero-book-card hero-book-main">
+                                    <img src="{{ book.image.url }}" alt="{{ book.title }}">
+                                </div>
+                            {% else %}
+                                <div class="hero-book-placeholder">ALPHA<br>BOOKS</div>
+                            {% endif %}
+                        {% endwith %}
+                    {% else %}
+                        <div class="hero-book-placeholder">ALPHA<br>BOOKS</div>
+                    {% endif %}
+                    <span class="hero-deco hero-deco-1"></span>
+                    <span class="hero-deco hero-deco-2"></span>
+                    <span class="hero-deco hero-deco-3"></span>
+                </div>
+            </article>
 
-            {% empty %}
+            <article class="home-hero-slide">
+                <div class="home-hero-content">
+                    <span class="home-hero-badge">SÁCH BÁN CHẠY</span>
+                    <h1>Những cuốn sách<br><strong>được yêu thích nhất</strong></h1>
+                    <p>
+                        Khám phá những tựa sách được nhiều khách hàng lựa chọn
+                        và tin tưởng tại Alpha Books.
+                    </p>
+                    <a href="{% url 'best_sellers' %}" class="home-hero-btn">
+                        XEM SÁCH BÁN CHẠY <span>→</span>
+                    </a>
+                </div>
 
-                <p>
-                    Chưa có sách.
-                </p>
+                <div class="home-hero-visual">
+                    {% if best_selling_books %}
+                        {% with book=best_selling_books.0 %}
+                            {% if book.image %}
+                                <div class="hero-book-card hero-book-main">
+                                    <img src="{{ book.image.url }}" alt="{{ book.title }}">
+                                </div>
+                            {% else %}
+                                <div class="hero-book-placeholder">BEST<br>SELLER</div>
+                            {% endif %}
+                        {% endwith %}
+                    {% else %}
+                        <div class="hero-book-placeholder">BEST<br>SELLER</div>
+                    {% endif %}
+                    <span class="hero-deco hero-deco-1"></span>
+                    <span class="hero-deco hero-deco-2"></span>
+                    <span class="hero-deco hero-deco-3"></span>
+                </div>
+            </article>
 
-            {% endfor %}
+            <article class="home-hero-slide">
+                <div class="home-hero-content">
+                    <span class="home-hero-badge">ƯU ĐÃI ĐẶC BIỆT</span>
+                    <h1>Đọc nhiều hơn,<br><strong>tiết kiệm nhiều hơn</strong></h1>
+                    <p>
+                        Tìm những cuốn sách đang có ưu đãi hấp dẫn
+                        và bổ sung ngay vào tủ sách của bạn.
+                    </p>
+                    <a href="{% url 'promotions' %}" class="home-hero-btn">
+                        XEM KHUYẾN MÃI <span>→</span>
+                    </a>
+                </div>
 
+                <div class="home-hero-visual">
+                    <div class="hero-sale-card">
+                        <span>SALE</span>
+                        <strong>UP TO</strong>
+                        <b>50%</b>
+                    </div>
+                    <span class="hero-deco hero-deco-1"></span>
+                    <span class="hero-deco hero-deco-2"></span>
+                    <span class="hero-deco hero-deco-3"></span>
+                </div>
+            </article>
 
         </div>
 
+        <button class="home-hero-arrow home-hero-prev" type="button" aria-label="Slide trước">‹</button>
+        <button class="home-hero-arrow home-hero-next" type="button" aria-label="Slide tiếp theo">›</button>
+
+        <div class="home-hero-dots">
+            <button class="home-hero-dot active" type="button" aria-label="Slide 1"></button>
+            <button class="home-hero-dot" type="button" aria-label="Slide 2"></button>
+            <button class="home-hero-dot" type="button" aria-label="Slide 3"></button>
+        </div>
+    </section>
+
+    <!-- =========================
+         CATEGORIES
+    ========================== -->
+    <section class="home-section home-category-section">
+        <div class="home-section-heading">
+            <div>
+                <span class="home-eyebrow">KHÁM PHÁ</span>
+                <h2>Danh mục sách</h2>
+                <p>Tìm đúng thể loại bạn đang quan tâm</p>
+            </div>
+
+            <a href="{% url 'book_list' %}" class="home-view-all">
+                Xem tất cả <span>→</span>
+            </a>
+        </div>
+
+        <div class="home-category-grid">
+            {% for category in categories %}
+                <a href="{% url 'book_list' %}?category={{ category.id }}" class="home-category-card">
+                    <div class="home-category-icon">
+                        {% if forloop.counter == 1 %}📚
+                        {% elif forloop.counter == 2 %}💡
+                        {% elif forloop.counter == 3 %}🌍
+                        {% elif forloop.counter == 4 %}📖
+                        {% elif forloop.counter == 5 %}🏛️
+                        {% elif forloop.counter == 6 %}🧠
+                        {% else %}✦
+                        {% endif %}
+                    </div>
+                    <div class="home-category-info">
+                        <h3>{{ category.name }}</h3>
+                        <span>Khám phá ngay →</span>
+                    </div>
+                </a>
+            {% empty %}
+                <div class="home-empty">
+                    Chưa có danh mục sách.
+                </div>
+            {% endfor %}
+        </div>
     </section>
 
 
+    <!-- =========================
+         SÁCH MỚI
+    ========================== -->
+    <section class="home-section">
+        <div class="home-section-heading">
+            <div>
+                <span class="home-eyebrow">MỚI NHẤT</span>
+                <h2>Sách mới</h2>
+                <p>Những tựa sách mới được cập nhật tại Alpha Books</p>
+            </div>
+
+            <div class="home-slider-actions">
+                <a href="{% url 'book_list' %}" class="home-view-all">
+                    Xem tất cả <span>→</span>
+                </a>
+                <div class="home-slider-arrows">
+                    <button type="button" class="home-slider-prev" data-target="new-books">‹</button>
+                    <button type="button" class="home-slider-next" data-target="new-books">›</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="home-book-slider" id="new-books">
+            <div class="home-book-track">
+                {% for book in books %}
+                    <article class="home-book-card">
+                        <a href="{% url 'book_detail' book.id %}" class="home-book-image">
+                            {% if book.image %}
+                                <img src="{{ book.image.url }}" alt="{{ book.title }}">
+                            {% else %}
+                                <div class="home-no-image">Chưa có ảnh</div>
+                            {% endif %}
+
+                            {% if book.discount_percent > 0 %}
+                                <span class="home-sale-badge">-{{ book.discount_percent }}%</span>
+                            {% endif %}
+                        </a>
+
+                        <div class="home-book-info">
+                            <a href="{% url 'book_detail' book.id %}" class="home-book-title">
+                                {{ book.title }}
+                            </a>
+
+                            <div class="home-book-price">
+                                <strong>{{ book.price|floatformat:0 }} ₫</strong>
+                                {% if book.original_price %}
+                                    <del>{{ book.original_price|floatformat:0 }} ₫</del>
+                                {% endif %}
+                            </div>
+
+                            <a href="{% url 'book_detail' book.id %}" class="home-book-btn">
+                                Xem chi tiết
+                            </a>
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="home-empty">
+                        Chưa có sách mới.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+
+    <!-- =========================
+         BEST SELLERS
+    ========================== -->
+    <section class="home-section home-highlight-section">
+        <div class="home-section-heading">
+            <div>
+                <span class="home-eyebrow">ĐƯỢC YÊU THÍCH</span>
+                <h2>🔥 Sách bán chạy</h2>
+                <p>Những cuốn sách được nhiều khách hàng lựa chọn</p>
+            </div>
+
+            <div class="home-slider-actions">
+                <a href="{% url 'best_sellers' %}" class="home-view-all">
+                    Xem tất cả <span>→</span>
+                </a>
+                <div class="home-slider-arrows">
+                    <button type="button" class="home-slider-prev" data-target="best-books">‹</button>
+                    <button type="button" class="home-slider-next" data-target="best-books">›</button>
+                </div>
+            </div>
+        </div>
+
+        {% if best_selling_books %}
+            <div class="home-book-slider" id="best-books">
+                <div class="home-book-track">
+                    {% for book in best_selling_books %}
+                        <article class="home-book-card">
+                            <a href="{% url 'book_detail' book.id %}" class="home-book-image">
+                                {% if book.image %}
+                                    <img src="{{ book.image.url }}" alt="{{ book.title }}">
+                                {% else %}
+                                    <div class="home-no-image">Chưa có ảnh</div>
+                                {% endif %}
+
+                                <span class="home-rank-badge">#{{ forloop.counter }}</span>
+
+                                {% if book.discount_percent > 0 %}
+                                    <span class="home-sale-badge">-{{ book.discount_percent }}%</span>
+                                {% endif %}
+                            </a>
+
+                            <div class="home-book-info">
+                                <a href="{% url 'book_detail' book.id %}" class="home-book-title">
+                                    {{ book.title }}
+                                </a>
+
+                                <div class="home-book-price">
+                                    <strong>{{ book.price|floatformat:0 }} ₫</strong>
+                                    {% if book.original_price %}
+                                        <del>{{ book.original_price|floatformat:0 }} ₫</del>
+                                    {% endif %}
+                                </div>
+
+                                {% if book.total_sold %}
+                                    <div class="home-sold">
+                                        🔥 Đã bán {{ book.total_sold }}
+                                    </div>
+                                {% endif %}
+
+                                <a href="{% url 'book_detail' book.id %}" class="home-book-btn">
+                                    Xem chi tiết
+                                </a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div class="home-empty-panel">
+                <strong>Chưa có dữ liệu sách bán chạy</strong>
+                <span>Hệ thống sẽ cập nhật khi có đơn hàng.</span>
+            </div>
+        {% endif %}
+    </section>
+
+
+    <!-- =========================
+         FEATURED
+    ========================== -->
+    <section class="home-section">
+        <div class="home-section-heading">
+            <div>
+                <span class="home-eyebrow">GỢI Ý CHO BẠN</span>
+                <h2>⭐ Sách nổi bật</h2>
+                <p>Những cuốn sách được đánh giá cao</p>
+            </div>
+
+            <div class="home-slider-actions">
+                <a href="{% url 'book_list' %}" class="home-view-all">
+                    Xem tất cả <span>→</span>
+                </a>
+                <div class="home-slider-arrows">
+                    <button type="button" class="home-slider-prev" data-target="featured-books">‹</button>
+                    <button type="button" class="home-slider-next" data-target="featured-books">›</button>
+                </div>
+            </div>
+        </div>
+
+        {% if featured_books %}
+            <div class="home-book-slider" id="featured-books">
+                <div class="home-book-track">
+                    {% for book in featured_books %}
+                        <article class="home-book-card">
+                            <a href="{% url 'book_detail' book.id %}" class="home-book-image">
+                                {% if book.image %}
+                                    <img src="{{ book.image.url }}" alt="{{ book.title }}">
+                                {% else %}
+                                    <div class="home-no-image">Chưa có ảnh</div>
+                                {% endif %}
+
+                                {% if book.discount_percent > 0 %}
+                                    <span class="home-sale-badge">-{{ book.discount_percent }}%</span>
+                                {% endif %}
+                            </a>
+
+                            <div class="home-book-info">
+                                <a href="{% url 'book_detail' book.id %}" class="home-book-title">
+                                    {{ book.title }}
+                                </a>
+
+                                <div class="home-rating">
+                                    <span>★★★★★</span>
+                                    <small>{{ book.average_rating|floatformat:1 }} ({{ book.review_count }})</small>
+                                </div>
+
+                                <div class="home-book-price">
+                                    <strong>{{ book.price|floatformat:0 }} ₫</strong>
+                                    {% if book.original_price %}
+                                        <del>{{ book.original_price|floatformat:0 }} ₫</del>
+                                    {% endif %}
+                                </div>
+
+                                <a href="{% url 'book_detail' book.id %}" class="home-book-btn">
+                                    Xem chi tiết
+                                </a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div class="home-empty-panel">
+                <strong>Chưa có sách nổi bật</strong>
+                <span>Hãy đánh giá sách để hệ thống cập nhật danh sách.</span>
+            </div>
+        {% endif %}
+    </section>
+
+
+    <!-- =========================
+         CTA
+    ========================== -->
+    <section class="home-cta">
+        <div>
+            <span class="home-eyebrow">ALPHA BOOKS</span>
+            <h2>Một cuốn sách hay có thể<br>thay đổi cách bạn nhìn thế giới.</h2>
+            <p>Khám phá và lựa chọn cuốn sách phù hợp với bạn hôm nay.</p>
+        </div>
+
+        <a href="{% url 'book_list' %}" class="home-cta-btn">
+            XEM TẤT CẢ SÁCH <span>→</span>
+        </a>
+    </section>
 
 </div>
 
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =========================
+       HERO CAROUSEL
+    ========================== */
+    const heroSlides = document.querySelectorAll(".home-hero-slide");
+    const heroDots = document.querySelectorAll(".home-hero-dot");
+    const heroPrev = document.querySelector(".home-hero-prev");
+    const heroNext = document.querySelector(".home-hero-next");
+
+    let heroIndex = 0;
+    let heroTimer;
+
+    function showHero(index) {
+        if (!heroSlides.length) return;
+
+        heroIndex = (index + heroSlides.length) % heroSlides.length;
+
+        heroSlides.forEach((slide, i) => {
+            slide.classList.toggle("active", i === heroIndex);
+        });
+
+        heroDots.forEach((dot, i) => {
+            dot.classList.toggle("active", i === heroIndex);
+        });
+    }
+
+    function startHeroAutoPlay() {
+        clearInterval(heroTimer);
+        heroTimer = setInterval(() => {
+            showHero(heroIndex + 1);
+        }, 6000);
+    }
+
+    if (heroNext) {
+        heroNext.addEventListener("click", function () {
+            showHero(heroIndex + 1);
+            startHeroAutoPlay();
+        });
+    }
+
+    if (heroPrev) {
+        heroPrev.addEventListener("click", function () {
+            showHero(heroIndex - 1);
+            startHeroAutoPlay();
+        });
+    }
+
+    heroDots.forEach((dot, index) => {
+        dot.addEventListener("click", function () {
+            showHero(index);
+            startHeroAutoPlay();
+        });
+    });
+
+    showHero(0);
+    startHeroAutoPlay();
+
+
+    /* =========================
+       BOOK SLIDERS
+    ========================== */
+    document.querySelectorAll(".home-slider-prev").forEach(button => {
+        button.addEventListener("click", function () {
+            const target = document.getElementById(this.dataset.target);
+            if (!target) return;
+
+            target.scrollBy({
+                left: -target.clientWidth * 0.9,
+                behavior: "smooth"
+            });
+        });
+    });
+
+    document.querySelectorAll(".home-slider-next").forEach(button => {
+        button.addEventListener("click", function () {
+            const target = document.getElementById(this.dataset.target);
+            if (!target) return;
+
+            target.scrollBy({
+                left: target.clientWidth * 0.9,
+                behavior: "smooth"
+            });
+        });
+    });
+
+});
+</script>
 
 {% endblock %}

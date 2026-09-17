@@ -1,0 +1,33 @@
+{% extends "admin/base.html" %}
+
+{% block title %}
+    {{ title }} | Alpha Books
+{% endblock %}
+
+{% block branding %}
+<div id="site-name">
+    <a href="{% url 'admin:index' %}">
+        Alpha Books - Quản trị hệ thống
+    </a>
+</div>
+{% endblock %}
+
+{% block nav-global %}
+<div id="nav-global">
+
+    <a href="{% url 'statistics' %}"
+       style="
+           display: inline-block;
+           margin-left: 15px;
+           padding: 8px 16px;
+           background: #417690;
+           color: white;
+           text-decoration: none;
+           border-radius: 5px;
+           font-weight: 600;
+       ">
+        📊 Thống kê bán hàng
+    </a>
+
+</div>
+{% endblock %}

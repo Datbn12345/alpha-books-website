@@ -1,0 +1,1871 @@
+{% extends "admin/base_site.html" %}
+
+
+{% block title %}
+    Thống kê bán hàng | Alpha Books
+{% endblock %}
+
+
+{% block extrastyle %}
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+.statistics-page,
+.statistics-page * {
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TRANG CHÍNH
+========================================================= */
+
+.statistics-page {
+    padding: 10px 5px 50px;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.statistics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    padding: 25px 28px;
+    margin-bottom: 24px;
+
+    background: linear-gradient(
+        135deg,
+        #417690 0%,
+        #28566d 100%
+    );
+
+    border-radius: 14px;
+    color: white;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+
+.statistics-header-left h1 {
+    margin: 0 0 7px;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+
+
+.statistics-header-left p {
+    margin: 0;
+    color: rgba(255,255,255,0.82);
+    font-size: 14px;
+}
+
+
+.statistics-header-icon {
+    width: 65px;
+    height: 65px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: rgba(255,255,255,0.15);
+
+    font-size: 34px;
+}
+
+
+/* =========================================================
+   TỔNG QUAN
+========================================================= */
+
+.overview-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
+
+    margin-bottom: 24px;
+}
+
+
+.overview-card {
+    position: relative;
+
+    padding: 22px;
+
+    background: #ffffff;
+
+    border: 1px solid #e6e9ed;
+
+    border-radius: 13px;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,0.05);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.overview-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 8px 22px rgba(0,0,0,0.09);
+}
+
+
+.overview-card::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 4px;
+    height: 100%;
+
+    background: #417690;
+}
+
+
+.overview-card:nth-child(2)::before {
+    background: #7c3aed;
+}
+
+
+.overview-card:nth-child(3)::before {
+    background: #2563eb;
+}
+
+
+.overview-card:nth-child(4)::before {
+    background: #16a34a;
+}
+
+
+.overview-card-top {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 15px;
+}
+
+
+.overview-card-title {
+    color: #6b7280;
+
+    font-size: 14px;
+
+    font-weight: 500;
+}
+
+
+.overview-card-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #f1f5f9;
+
+    font-size: 21px;
+}
+
+
+.overview-card-value {
+    font-size: 26px;
+
+    font-weight: 700;
+
+    color: #1f2937;
+
+    line-height: 1.2;
+}
+
+
+.revenue-value {
+    color: #15803d;
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.statistics-section {
+    background: #ffffff;
+
+    border: 1px solid #e6e9ed;
+
+    border-radius: 13px;
+
+    padding: 23px;
+
+    margin-bottom: 24px;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,0.04);
+}
+
+
+.section-heading {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+
+.section-title {
+    margin: 0;
+
+    color: #1f2937;
+
+    font-size: 18px;
+
+    font-weight: 700;
+}
+
+
+.section-description {
+    color: #9ca3af;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   BIỂU ĐỒ
+========================================================= */
+
+.chart-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.65fr)
+        minmax(0, 1fr);
+
+    gap: 24px;
+
+    margin-bottom: 24px;
+}
+
+
+.chart-grid .statistics-section {
+    margin-bottom: 0;
+}
+
+
+.chart-container {
+    position: relative;
+
+    width: 100%;
+
+    height: 360px;
+}
+
+
+.chart-container-pie {
+    position: relative;
+
+    width: 100%;
+
+    height: 360px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.chart-container canvas,
+.chart-container-pie canvas {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+
+/* =========================================================
+   TRẠNG THÁI ĐƠN HÀNG
+========================================================= */
+
+.order-status-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    gap: 13px;
+}
+
+
+.status-card {
+    padding: 18px;
+
+    border-radius: 11px;
+
+    border: 1px solid #e5e7eb;
+
+    background: #fafafa;
+
+    text-align: center;
+
+    transition: 0.2s ease;
+}
+
+
+.status-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.06);
+}
+
+
+.status-icon {
+    font-size: 25px;
+
+    margin-bottom: 8px;
+}
+
+
+.status-card-title {
+    color: #6b7280;
+
+    font-size: 13px;
+
+    margin-bottom: 7px;
+}
+
+
+.status-card-value {
+    font-size: 25px;
+
+    font-weight: 700;
+}
+
+
+.status-pending {
+    color: #d97706;
+}
+
+
+.status-confirmed {
+    color: #2563eb;
+}
+
+
+.status-shipping {
+    color: #7c3aed;
+}
+
+
+.status-completed {
+    color: #16a34a;
+}
+
+
+.status-cancelled {
+    color: #dc2626;
+}
+
+
+/* =========================================================
+   2 CỘT
+========================================================= */
+
+.two-column {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+    gap: 24px;
+
+    margin-bottom: 24px;
+}
+
+
+.two-column .statistics-section {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+
+.statistics-table {
+    width: 100%;
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+}
+
+
+.statistics-table thead th {
+    padding: 13px 12px;
+
+    background: #f8fafc;
+
+    color: #64748b;
+
+    border-top: 1px solid #e5e7eb;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.3px;
+}
+
+
+.statistics-table thead th:first-child {
+    border-top-left-radius: 8px;
+}
+
+
+.statistics-table thead th:last-child {
+    border-top-right-radius: 8px;
+}
+
+
+.statistics-table tbody td {
+    padding: 14px 12px;
+
+    border-bottom: 1px solid #f0f2f4;
+
+    color: #374151;
+
+    font-size: 14px;
+
+    vertical-align: middle;
+}
+
+
+.statistics-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+
+.statistics-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+
+.statistics-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+.statistics-table .number {
+    text-align: right;
+
+    white-space: nowrap;
+}
+
+
+.book-name {
+    font-weight: 600;
+
+    color: #1f2937;
+}
+
+
+.money {
+    color: #15803d;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   RANK
+========================================================= */
+
+.rank {
+    width: 42px;
+
+    text-align: center;
+
+    font-weight: 800;
+
+    color: #64748b;
+}
+
+
+.rank-1 {
+    color: #d4a017;
+}
+
+
+.rank-2 {
+    color: #777;
+}
+
+
+.rank-3 {
+    color: #a05a2c;
+}
+
+
+/* =========================================================
+   BADGE
+========================================================= */
+
+.quantity-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 38px;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.revenue-badge {
+    display: inline-block;
+
+    padding: 6px 10px;
+
+    border-radius: 6px;
+
+    background: #f0fdf4;
+
+    color: #15803d;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   KHO
+========================================================= */
+
+.inventory-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 18px;
+}
+
+
+.inventory-card {
+    position: relative;
+
+    padding: 23px;
+
+    border-radius: 12px;
+
+    border: 1px solid #e5e7eb;
+
+    background: #ffffff;
+
+    overflow: hidden;
+}
+
+
+.inventory-card::after {
+    content: "";
+
+    position: absolute;
+
+    right: -20px;
+    bottom: -25px;
+
+    width: 90px;
+    height: 90px;
+
+    border-radius: 50%;
+
+    background: rgba(37,99,235,0.06);
+}
+
+
+.inventory-card.warning::after {
+    background: rgba(217,119,6,0.07);
+}
+
+
+.inventory-card.danger::after {
+    background: rgba(220,38,38,0.07);
+}
+
+
+.inventory-top {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 16px;
+}
+
+
+.inventory-icon {
+    font-size: 28px;
+}
+
+
+.inventory-title {
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+
+.inventory-value {
+    font-size: 28px;
+
+    font-weight: 700;
+
+    color: #2563eb;
+}
+
+
+.inventory-warning {
+    color: #d97706;
+}
+
+
+.inventory-danger {
+    color: #dc2626;
+}
+
+
+/* =========================================================
+   ĐÁNH GIÁ
+========================================================= */
+
+.review-box {
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 20px;
+
+    border-radius: 11px;
+
+    background: #fffbeb;
+
+    border: 1px solid #fef3c7;
+}
+
+
+.review-icon {
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #fef3c7;
+
+    font-size: 30px;
+}
+
+
+.review-number {
+    font-size: 30px;
+
+    font-weight: 700;
+
+    color: #92400e;
+}
+
+
+.review-text {
+    margin-top: 3px;
+
+    color: #78716c;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.empty-data {
+    padding: 30px 10px;
+
+    text-align: center;
+
+    color: #9ca3af;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .overview-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .order-status-grid {
+        grid-template-columns:
+            repeat(3, 1fr);
+    }
+
+
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 900px) {
+
+    .two-column {
+        grid-template-columns: 1fr;
+    }
+
+
+    .inventory-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .statistics-page {
+        padding: 5px;
+    }
+
+
+    .statistics-header {
+        padding: 20px;
+
+        align-items: flex-start;
+    }
+
+
+    .statistics-header-left h1 {
+        font-size: 22px;
+    }
+
+
+    .statistics-header-icon {
+        display: none;
+    }
+
+
+    .overview-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .order-status-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .statistics-section {
+        padding: 17px;
+
+        overflow-x: auto;
+    }
+
+
+    .statistics-table {
+        min-width: 600px;
+    }
+
+
+    .chart-container {
+        height: 300px;
+    }
+
+
+    .chart-container-pie {
+        height: 300px;
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    .order-status-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="statistics-page">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="statistics-header">
+
+        <div class="statistics-header-left">
+
+            <h1>
+                📊 Thống kê bán hàng
+            </h1>
+
+            <p>
+                Tổng quan tình hình kinh doanh của website Alpha Books
+            </p>
+
+        </div>
+
+
+        <div class="statistics-header-icon">
+            📈
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         1. TỔNG QUAN
+    ====================================================== -->
+
+    <div class="overview-grid">
+
+        <div class="overview-card">
+
+            <div class="overview-card-top">
+
+                <span class="overview-card-title">
+                    Tổng số sách
+                </span>
+
+                <span class="overview-card-icon">
+                    📚
+                </span>
+
+            </div>
+
+            <div class="overview-card-value">
+                {{ total_books }}
+            </div>
+
+        </div>
+
+
+        <div class="overview-card">
+
+            <div class="overview-card-top">
+
+                <span class="overview-card-title">
+                    Tổng khách hàng
+                </span>
+
+                <span class="overview-card-icon">
+                    👥
+                </span>
+
+            </div>
+
+            <div class="overview-card-value">
+                {{ total_customers }}
+            </div>
+
+        </div>
+
+
+        <div class="overview-card">
+
+            <div class="overview-card-top">
+
+                <span class="overview-card-title">
+                    Tổng đơn hàng
+                </span>
+
+                <span class="overview-card-icon">
+                    📦
+                </span>
+
+            </div>
+
+            <div class="overview-card-value">
+                {{ total_orders }}
+            </div>
+
+        </div>
+
+
+        <div class="overview-card">
+
+            <div class="overview-card-top">
+
+                <span class="overview-card-title">
+                    Tổng doanh thu
+                </span>
+
+                <span class="overview-card-icon">
+                    💰
+                </span>
+
+            </div>
+
+            <div class="overview-card-value revenue-value">
+
+                {{ total_revenue|floatformat:0 }} ₫
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         2. BIỂU ĐỒ
+    ====================================================== -->
+
+    <div class="chart-grid">
+
+
+        <!-- =================================================
+             DOANH THU THEO NGÀY
+        ================================================== -->
+
+        <div class="statistics-section">
+
+            <div class="section-heading">
+
+                <h2 class="section-title">
+                    📈 Doanh thu theo ngày
+                </h2>
+
+                <span class="section-description">
+                    Chỉ tính đơn hàng đã hoàn thành
+                </span>
+
+            </div>
+
+
+            {% if revenue_chart_labels %}
+
+                <div class="chart-container">
+
+                    <canvas id="revenueChart"></canvas>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-data">
+                    Chưa có dữ liệu doanh thu theo ngày.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =================================================
+             DOANH THU THEO DANH MỤC
+        ================================================== -->
+
+        <div class="statistics-section">
+
+            <div class="section-heading">
+
+                <h2 class="section-title">
+                    📂 Doanh thu theo danh mục
+                </h2>
+
+                <span class="section-description">
+                    Tỷ trọng doanh thu
+                </span>
+
+            </div>
+
+
+            {% if category_chart_labels %}
+
+                <div class="chart-container-pie">
+
+                    <canvas id="categoryChart"></canvas>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-data">
+                    Chưa có dữ liệu danh mục.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         3. ĐƠN HÀNG
+    ====================================================== -->
+
+    <div class="statistics-section">
+
+        <div class="section-heading">
+
+            <h2 class="section-title">
+                📦 Đơn hàng theo trạng thái
+            </h2>
+
+            <span class="section-description">
+                Tổng quan trạng thái đơn hàng
+            </span>
+
+        </div>
+
+
+        <div class="order-status-grid">
+
+            <div class="status-card">
+
+                <div class="status-icon">
+                    ⏳
+                </div>
+
+                <div class="status-card-title">
+                    Chờ xử lý
+                </div>
+
+                <div class="status-card-value status-pending">
+                    {{ pending_orders }}
+                </div>
+
+            </div>
+
+
+            <div class="status-card">
+
+                <div class="status-icon">
+                    ✓
+                </div>
+
+                <div class="status-card-title">
+                    Đã xác nhận
+                </div>
+
+                <div class="status-card-value status-confirmed">
+                    {{ confirmed_orders }}
+                </div>
+
+            </div>
+
+
+            <div class="status-card">
+
+                <div class="status-icon">
+                    🚚
+                </div>
+
+                <div class="status-card-title">
+                    Đang giao
+                </div>
+
+                <div class="status-card-value status-shipping">
+                    {{ shipping_orders }}
+                </div>
+
+            </div>
+
+
+            <div class="status-card">
+
+                <div class="status-icon">
+                    ✓
+                </div>
+
+                <div class="status-card-title">
+                    Hoàn thành
+                </div>
+
+                <div class="status-card-value status-completed">
+                    {{ completed_orders }}
+                </div>
+
+            </div>
+
+
+            <div class="status-card">
+
+                <div class="status-icon">
+                    ✕
+                </div>
+
+                <div class="status-card-title">
+                    Đã hủy
+                </div>
+
+                <div class="status-card-value status-cancelled">
+                    {{ cancelled_orders }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         4. TOP SÁCH + DOANH THU
+    ====================================================== -->
+
+    <div class="two-column">
+
+
+        <!-- TOP SÁCH -->
+
+        <div class="statistics-section">
+
+            <div class="section-heading">
+
+                <h2 class="section-title">
+                    🏆 Top 5 sách bán chạy
+                </h2>
+
+            </div>
+
+
+            {% if best_selling_books %}
+
+                <div class="table-wrapper">
+
+                    <table class="statistics-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th style="width: 45px;">
+                                    #
+                                </th>
+
+                                <th>
+                                    Tên sách
+                                </th>
+
+                                <th class="number">
+                                    Đã bán
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for book in best_selling_books %}
+
+                                <tr>
+
+                                    <td class="
+                                        rank
+                                        {% if forloop.counter == 1 %}
+                                            rank-1
+                                        {% elif forloop.counter == 2 %}
+                                            rank-2
+                                        {% elif forloop.counter == 3 %}
+                                            rank-3
+                                        {% endif %}
+                                    ">
+
+                                        {% if forloop.counter == 1 %}
+                                            🥇
+                                        {% elif forloop.counter == 2 %}
+                                            🥈
+                                        {% elif forloop.counter == 3 %}
+                                            🥉
+                                        {% else %}
+                                            {{ forloop.counter }}
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td class="book-name">
+                                        {{ book.title }}
+                                    </td>
+
+
+                                    <td class="number">
+
+                                        <span class="quantity-badge">
+                                            {{ book.total_sold }}
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-data">
+                    Chưa có dữ liệu bán hàng.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- DOANH THU THEO SÁCH -->
+
+        <div class="statistics-section">
+
+            <div class="section-heading">
+
+                <h2 class="section-title">
+                    💰 Doanh thu theo sách
+                </h2>
+
+            </div>
+
+
+            {% if book_revenue %}
+
+                <div class="table-wrapper">
+
+                    <table class="statistics-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Sách
+                                </th>
+
+                                <th class="number">
+                                    Số lượng
+                                </th>
+
+                                <th class="number">
+                                    Doanh thu
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for item in book_revenue %}
+
+                                <tr>
+
+                                    <td class="book-name">
+                                        {{ item.book__title }}
+                                    </td>
+
+
+                                    <td class="number">
+
+                                        <span class="quantity-badge">
+                                            {{ item.total_quantity }}
+                                        </span>
+
+                                    </td>
+
+
+                                    <td class="number">
+
+                                        <span class="revenue-badge">
+                                            {{ item.total_revenue|floatformat:0 }} ₫
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-data">
+                    Chưa có dữ liệu doanh thu.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         5. DOANH THU THEO DANH MỤC
+    ====================================================== -->
+
+    <div class="statistics-section">
+
+        <div class="section-heading">
+
+            <h2 class="section-title">
+                📂 Doanh thu theo danh mục sách
+            </h2>
+
+            <span class="section-description">
+                Thống kê theo từng danh mục
+            </span>
+
+        </div>
+
+
+        {% if category_revenue %}
+
+            <div class="table-wrapper">
+
+                <table class="statistics-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Danh mục
+                            </th>
+
+                            <th class="number">
+                                Số lượng đã bán
+                            </th>
+
+                            <th class="number">
+                                Doanh thu
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for item in category_revenue %}
+
+                            <tr>
+
+                                <td class="book-name">
+                                    📁 {{ item.book__category__name|default:"Chưa phân loại" }}
+                                </td>
+
+
+                                <td class="number">
+
+                                    <span class="quantity-badge">
+                                        {{ item.total_quantity }}
+                                    </span>
+
+                                </td>
+
+
+                                <td class="number">
+
+                                    <span class="revenue-badge">
+                                        {{ item.total_revenue|floatformat:0 }} ₫
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-data">
+                Chưa có dữ liệu doanh thu theo danh mục.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         6. TỒN KHO
+    ====================================================== -->
+
+    <div class="statistics-section">
+
+        <div class="section-heading">
+
+            <h2 class="section-title">
+                📦 Tình trạng kho
+            </h2>
+
+            <span class="section-description">
+                Theo dõi số lượng sách trong kho
+            </span>
+
+        </div>
+
+
+        <div class="inventory-grid">
+
+            <div class="inventory-card">
+
+                <div class="inventory-top">
+
+                    <div class="inventory-title">
+                        Tổng số lượng tồn kho
+                    </div>
+
+                    <div class="inventory-icon">
+                        📚
+                    </div>
+
+                </div>
+
+
+                <div class="inventory-value">
+                    {{ total_stock }}
+                </div>
+
+            </div>
+
+
+            <div class="inventory-card warning">
+
+                <div class="inventory-top">
+
+                    <div class="inventory-title">
+                        Sắp hết hàng
+                    </div>
+
+                    <div class="inventory-icon">
+                        ⚠️
+                    </div>
+
+                </div>
+
+
+                <div class="inventory-value inventory-warning">
+                    {{ low_stock }}
+                </div>
+
+            </div>
+
+
+            <div class="inventory-card danger">
+
+                <div class="inventory-top">
+
+                    <div class="inventory-title">
+                        Hết hàng
+                    </div>
+
+                    <div class="inventory-icon">
+                        ❌
+                    </div>
+
+                </div>
+
+
+                <div class="inventory-value inventory-danger">
+                    {{ out_of_stock }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         7. ĐÁNH GIÁ
+    ====================================================== -->
+
+    <div class="statistics-section">
+
+        <div class="section-heading">
+
+            <h2 class="section-title">
+                ⭐ Đánh giá sách
+            </h2>
+
+        </div>
+
+
+        <div class="review-box">
+
+            <div class="review-icon">
+                ⭐
+            </div>
+
+
+            <div>
+
+                <div class="review-number">
+                    {{ total_reviews }}
+                </div>
+
+                <div class="review-text">
+                    Tổng số lượt đánh giá sách trên hệ thống
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- =========================================================
+     CHART.JS
+========================================================= -->
+
+{{ revenue_chart_labels|json_script:"revenue-chart-labels" }}
+{{ revenue_chart_data|json_script:"revenue-chart-data" }}
+{{ revenue_chart_orders|json_script:"revenue-chart-orders" }}
+{{ category_chart_labels|json_script:"category-chart-labels" }}
+{{ category_chart_data|json_script:"category-chart-data" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =====================================================
+       HÀM ĐỌC DỮ LIỆU JSON TỪ DJANGO
+    ===================================================== */
+
+    function getChartData(id) {
+        const element = document.getElementById(id);
+
+        if (!element) {
+            return [];
+        }
+
+        try {
+            return JSON.parse(element.textContent);
+        } catch (error) {
+            console.error("Không thể đọc dữ liệu biểu đồ:", id, error);
+            return [];
+        }
+    }
+
+    const revenueLabels = getChartData("revenue-chart-labels");
+    const revenueData = getChartData("revenue-chart-data");
+    const revenueOrders = getChartData("revenue-chart-orders");
+
+    const categoryLabels = getChartData("category-chart-labels");
+    const categoryData = getChartData("category-chart-data");
+
+    const moneyFormatter = new Intl.NumberFormat("vi-VN");
+
+
+    /* =====================================================
+       1. BIỂU ĐỒ CỘT - DOANH THU THEO NGÀY
+    ===================================================== */
+
+    const revenueCanvas = document.getElementById("revenueChart");
+
+    if (revenueCanvas && revenueLabels.length > 0 && revenueData.length > 0) {
+
+        new Chart(revenueCanvas, {
+
+            type: "bar",
+
+            data: {
+                labels: revenueLabels,
+
+                datasets: [
+                    {
+                        label: "Doanh thu",
+                        data: revenueData,
+
+                        borderWidth: 1,
+                        borderRadius: 7,
+                        maxBarThickness: 60,
+
+                        backgroundColor: "rgba(65, 118, 144, 0.75)",
+                        borderColor: "#28566d"
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                interaction: {
+                    intersect: false,
+                    mode: "index"
+                },
+
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+                        callbacks: {
+
+                            title: function (tooltipItems) {
+                                return tooltipItems[0].label;
+                            },
+
+                            label: function (context) {
+                                const value = Number(context.raw || 0);
+                                const index = context.dataIndex;
+                                const orderCount = Number(revenueOrders[index] || 0);
+
+                                return [
+                                    " Doanh thu: " + moneyFormatter.format(value) + " ₫",
+                                    " Số đơn: " + orderCount
+                                ];
+                            }
+                        }
+                    }
+                },
+
+                scales: {
+
+                    x: {
+                        grid: {
+                            display: false
+                        },
+
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0
+                        }
+                    },
+
+                    y: {
+                        beginAtZero: true,
+
+                        ticks: {
+                            callback: function (value) {
+                                return moneyFormatter.format(value) + " ₫";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+    /* =====================================================
+       2. BIỂU ĐỒ TRÒN - DOANH THU THEO DANH MỤC
+    ===================================================== */
+
+    const categoryCanvas = document.getElementById("categoryChart");
+
+    if (categoryCanvas && categoryLabels.length > 0 && categoryData.length > 0) {
+
+        new Chart(categoryCanvas, {
+
+            type: "doughnut",
+
+            data: {
+                labels: categoryLabels,
+
+                datasets: [
+                    {
+                        data: categoryData,
+
+                        borderWidth: 2,
+                        borderColor: "#ffffff",
+
+                        backgroundColor: [
+                            "#4285F4",
+                            "#EA4335",
+                            "#10B981",
+                            "#F59E0B",
+                            "#8B5CF6",
+                            "#06B6D4",
+                            "#EC4899",
+                            "#84CC16",
+                            "#F97316",
+                            "#6366F1"
+                        ],
+
+                        hoverOffset: 8
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                cutout: "52%",
+
+                plugins: {
+
+                    legend: {
+                        position: "bottom",
+
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            pointStyle: "circle"
+                        }
+                    },
+
+                    tooltip: {
+                        callbacks: {
+
+                            label: function (context) {
+
+                                const value = Number(context.raw || 0);
+
+                                const total = context.dataset.data.reduce(
+                                    function (sum, item) {
+                                        return sum + Number(item || 0);
+                                    },
+                                    0
+                                );
+
+                                const percentage = total > 0
+                                    ? ((value / total) * 100).toFixed(1)
+                                    : "0.0";
+
+                                return (
+                                    " " +
+                                    context.label +
+                                    ": " +
+                                    moneyFormatter.format(value) +
+                                    " ₫ (" +
+                                    percentage +
+                                    "%)"
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+});
+</script>
+
+{% endblock %}

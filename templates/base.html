@@ -36,7 +36,7 @@
 
             <div class="logo">
 
-                <a href="/">
+                <a href="{% url 'home' %}">
                     ALPHA-BOOKS
                 </a>
 
@@ -59,6 +59,7 @@
                     <input
                         type="text"
                         name="q"
+                        value="{{ request.GET.q|default:'' }}"
                         placeholder="Tìm kiếm sách, tác giả..."
                     >
 
@@ -222,30 +223,35 @@
 
 
                 <li>
-                    <a href="#">
+                    <a href="{% url 'best_sellers' %}">
                         Sách bán chạy
                     </a>
                 </li>
 
 
                 <li>
-                    <a href="#">
+                    <a href="{% url 'promotions' %}">
                         Khuyến mãi
                     </a>
                 </li>
 
 
                 <li>
-                    <a href="#">
-                        Review sách
-                    </a>
-                </li>
 
+                    {% if user.is_authenticated %}
 
-                <li>
-                    <a href="{% url 'my_orders' %}">
-                        Tra cứu đơn hàng
-                    </a>
+                        <a href="{% url 'my_orders' %}">
+                            Tra cứu đơn hàng
+                        </a>
+
+                    {% else %}
+
+                        <a href="{% url 'login' %}">
+                            Tra cứu đơn hàng
+                        </a>
+
+                    {% endif %}
+
                 </li>
 
             </ul>
@@ -255,6 +261,53 @@
     </nav>
 
 </header>
+
+
+<!-- =====================================================
+     TOAST THÔNG BÁO HỆ THỐNG
+====================================================== -->
+
+{% if messages %}
+
+    <div class="messages-container">
+
+        {% for message in messages %}
+
+            <div class="alert alert-{{ message.tags }}">
+
+                <span class="alert-icon">
+
+                    {% if message.tags == "success" %}
+                        ✅
+
+                    {% elif message.tags == "error" %}
+                        ❌
+
+                    {% elif message.tags == "warning" %}
+                        ⚠️
+
+                    {% elif message.tags == "info" %}
+                        ℹ️
+
+                    {% else %}
+                        📢
+
+                    {% endif %}
+
+                </span>
+
+
+                <span class="alert-message">
+                    {{ message }}
+                </span>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% endif %}
 
 
 <!-- MAIN -->
@@ -434,7 +487,944 @@
 
 </footer>
 
+<!-- =====================================================
+     ALPHABOT AI
+===================================================== -->
 
+<!-- NÚT MỞ CHATBOT -->
+
+<button
+    type="button"
+    id="alphabot-toggle"
+    class="alphabot-toggle"
+    aria-label="Mở AlphaBot AI"
+>
+    🤖
+</button>
+
+
+<!-- =====================================================
+     CỬA SỔ CHATBOT
+===================================================== -->
+
+<div
+    id="alphabot-window"
+    class="alphabot-window"
+>
+
+    <!-- =================================================
+         HEADER
+    ================================================== -->
+
+    <div class="alphabot-header">
+
+        <div class="alphabot-header-left">
+
+            <div class="alphabot-avatar">
+                🤖
+            </div>
+
+            <div>
+
+                <div class="alphabot-title">
+                    AlphaBot AI
+                </div>
+
+                <div class="alphabot-status">
+
+                    <span class="alphabot-status-dot"></span>
+
+                    Trợ lý sách Alpha Books
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="alphabot-close"
+            class="alphabot-close"
+            aria-label="Đóng AlphaBot"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <!-- =================================================
+         KHU VỰC TIN NHẮN
+    ================================================== -->
+
+    <div
+        id="alphabot-messages"
+        class="alphabot-messages"
+    >
+
+        <!-- TIN NHẮN CHÀO MỪNG -->
+
+        <div class="alphabot-message bot">
+
+            <div class="alphabot-message-content">
+
+                👋 Xin chào!
+
+                <br><br>
+
+                Mình là <strong>AlphaBot AI</strong>.
+
+                <br>
+
+                Mình có thể giúp bạn tìm kiếm và lựa chọn
+                những cuốn sách phù hợp tại Alpha Books.
+
+                <br><br>
+
+                Bạn có thể hỏi mình:
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             CÂU HỎI GỢI Ý
+        ================================================== -->
+
+        <div>
+
+            <div class="alphabot-quick-title">
+                Gợi ý câu hỏi
+            </div>
+
+
+            <div class="alphabot-quick-actions">
+
+                <button
+                    type="button"
+                    class="alphabot-quick-btn"
+                    data-question="Gợi ý cho tôi một số sách hay"
+                >
+                    📚 Sách hay
+                </button>
+
+
+                <button
+                    type="button"
+                    class="alphabot-quick-btn"
+                    data-question="Gợi ý sách về lịch sử"
+                >
+                    🏛️ Sách lịch sử
+                </button>
+
+
+                <button
+                    type="button"
+                    class="alphabot-quick-btn"
+                    data-question="Gợi ý sách học tiếng Anh"
+                >
+                    🇬🇧 Học tiếng Anh
+                </button>
+
+
+                <button
+                    type="button"
+                    class="alphabot-quick-btn"
+                    data-question="Sách nào đang bán chạy?"
+                >
+                    🔥 Bán chạy
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         Ô NHẬP CÂU HỎI
+    ================================================== -->
+
+    <div class="alphabot-input-area">
+
+        <form
+            id="alphabot-form"
+        >
+
+            <div class="alphabot-input-wrapper">
+
+                <input
+                    type="text"
+                    id="alphabot-input"
+                    class="alphabot-input"
+                    placeholder="Bạn muốn tìm sách gì?"
+                    autocomplete="off"
+                >
+
+
+                <button
+                    type="submit"
+                    class="alphabot-send"
+                    aria-label="Gửi câu hỏi"
+                >
+                    ➤
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ALPHABOT JAVASCRIPT
+===================================================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const toggleButton =
+            document.getElementById(
+                "alphabot-toggle"
+            );
+
+        const closeButton =
+            document.getElementById(
+                "alphabot-close"
+            );
+
+        const chatWindow =
+            document.getElementById(
+                "alphabot-window"
+            );
+
+        const form =
+            document.getElementById(
+                "alphabot-form"
+            );
+
+        const input =
+            document.getElementById(
+                "alphabot-input"
+            );
+
+        const messages =
+            document.getElementById(
+                "alphabot-messages"
+            );
+
+
+        /* =================================================
+           KIỂM TRA PHẦN TỬ
+        ================================================= */
+
+        if (
+            !toggleButton ||
+            !closeButton ||
+            !chatWindow ||
+            !form ||
+            !input ||
+            !messages
+        ) {
+
+            return;
+
+        }
+
+
+        /* =================================================
+           MỞ CHATBOT
+        ================================================= */
+
+        toggleButton.addEventListener(
+            "click",
+            function () {
+
+                chatWindow.classList.toggle(
+                    "active"
+                );
+
+                if (
+                    chatWindow.classList.contains(
+                        "active"
+                    )
+                ) {
+
+                    setTimeout(
+                        function () {
+
+                            input.focus();
+
+                        },
+                        200
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           ĐÓNG CHATBOT
+        ================================================= */
+
+        closeButton.addEventListener(
+            "click",
+            function () {
+
+                chatWindow.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+        /* =================================================
+           CUỘN XUỐNG CUỐI
+        ================================================= */
+
+        function scrollMessages() {
+
+            messages.scrollTop =
+                messages.scrollHeight;
+
+        }
+
+
+        /* =================================================
+           THÊM TIN NHẮN TEXT
+        ================================================= */
+
+        function addMessage(
+            text,
+            type
+        ) {
+
+            const message =
+                document.createElement(
+                    "div"
+                );
+
+            message.className =
+                "alphabot-message " + type;
+
+
+            const content =
+                document.createElement(
+                    "div"
+                );
+
+            content.className =
+                "alphabot-message-content";
+
+
+            content.textContent =
+                text;
+
+
+            message.appendChild(
+                content
+            );
+
+
+            messages.appendChild(
+                message
+            );
+
+
+            scrollMessages();
+
+        }
+
+
+        /* =================================================
+           HIỂN THỊ ĐANG SUY NGHĨ
+        ================================================= */
+
+        function addTypingMessage() {
+
+            const message =
+                document.createElement(
+                    "div"
+                );
+
+            message.className =
+                "alphabot-message bot alphabot-typing-message";
+
+
+            const content =
+                document.createElement(
+                    "div"
+                );
+
+            content.className =
+                "alphabot-message-content";
+
+
+            content.textContent =
+                "🤖 AlphaBot đang tìm kiếm sách...";
+
+
+            message.appendChild(
+                content
+            );
+
+
+            messages.appendChild(
+                message
+            );
+
+
+            scrollMessages();
+
+
+            return message;
+
+        }
+
+
+        /* =================================================
+           ĐỊNH DẠNG GIÁ
+        ================================================= */
+
+        function formatPrice(
+            price
+        ) {
+
+            return new Intl.NumberFormat(
+                "vi-VN"
+            ).format(
+                price
+            ) + " ₫";
+
+        }
+
+
+        /* =================================================
+           HIỂN THỊ SÁCH
+        ================================================= */
+
+        function addBookResults(
+            data
+        ) {
+
+            if (
+                !data.books ||
+                data.books.length === 0
+            ) {
+
+                addMessage(
+                    data.message ||
+                    "Mình chưa tìm thấy sách phù hợp.",
+                    "bot"
+                );
+
+                return;
+
+            }
+
+
+            const message =
+                document.createElement(
+                    "div"
+                );
+
+            message.className =
+                "alphabot-message bot";
+
+
+            const content =
+                document.createElement(
+                    "div"
+                );
+
+            content.className =
+                "alphabot-message-content";
+
+
+            /* -------------------------------------------------
+               LỜI GIỚI THIỆU
+            ------------------------------------------------- */
+
+            const intro =
+                document.createElement(
+                    "div"
+                );
+
+            intro.textContent =
+                data.message ||
+                "📚 Đây là những cuốn sách mình tìm thấy:";
+
+
+            content.appendChild(
+                intro
+            );
+
+
+            /* -------------------------------------------------
+               DANH SÁCH SÁCH
+            ------------------------------------------------- */
+
+            data.books.forEach(
+                function (book) {
+
+                    const bookCard =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    bookCard.style.marginTop =
+                        "12px";
+
+                    bookCard.style.padding =
+                        "10px";
+
+                    bookCard.style.border =
+                        "1px solid #eee";
+
+                    bookCard.style.borderRadius =
+                        "10px";
+
+                    bookCard.style.background =
+                        "#fff";
+
+
+                    /* Tên sách */
+
+                    const title =
+                        document.createElement(
+                            "a"
+                        );
+
+                    title.href =
+                        book.url;
+
+                    title.textContent =
+                        "📖 " + book.title;
+
+                    title.style.fontWeight =
+                        "700";
+
+                    title.style.color =
+                        "#f57c00";
+
+                    title.style.display =
+                        "block";
+
+                    title.style.marginBottom =
+                        "5px";
+
+
+                    /* Giá */
+
+                    const price =
+                        document.createElement(
+                            "div"
+                        );
+
+                    price.textContent =
+                        "💰 " +
+                        formatPrice(
+                            book.price
+                        );
+
+
+                    /* Tồn kho */
+
+                    const stock =
+                        document.createElement(
+                            "div"
+                        );
+
+                    if (
+                        book.stock > 0
+                    ) {
+
+                        stock.textContent =
+                            "✓ Còn hàng";
+
+                        stock.style.color =
+                            "#198754";
+
+                    } else {
+
+                        stock.textContent =
+                            "✕ Hết hàng";
+
+                        stock.style.color =
+                            "#dc3545";
+
+                    }
+
+
+                    bookCard.appendChild(
+                        title
+                    );
+
+                    bookCard.appendChild(
+                        price
+                    );
+
+                    bookCard.appendChild(
+                        stock
+                    );
+
+
+                    content.appendChild(
+                        bookCard
+                    );
+
+                }
+            );
+
+
+            message.appendChild(
+                content
+            );
+
+
+            messages.appendChild(
+                message
+            );
+
+
+            scrollMessages();
+
+        }
+
+
+        /* =================================================
+           GỬI CÂU HỎI ĐẾN DJANGO
+        ================================================= */
+
+        async function sendQuestion(
+            question
+        ) {
+
+            try {
+
+                const response =
+                    await fetch(
+                        "{% url 'alphabot_chat' %}",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+
+                                "X-CSRFToken":
+                                    getCookie(
+                                        "csrftoken"
+                                    )
+                            },
+
+                            body: JSON.stringify(
+                                {
+                                    question:
+                                        question
+                                }
+                            )
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    !data.success
+                ) {
+
+                    addMessage(
+                        data.message ||
+                        "Đã xảy ra lỗi khi xử lý câu hỏi.",
+                        "bot"
+                    );
+
+                    return;
+
+                }
+
+
+                /* -----------------------------------------
+                   KẾT QUẢ DẠNG DANH SÁCH SÁCH
+                ----------------------------------------- */
+
+                if (
+                    data.type ===
+                    "recommendation"
+                ) {
+
+                    addBookResults(
+                        data
+                    );
+
+                }
+
+                /* -----------------------------------------
+                   KẾT QUẢ TEXT
+                ----------------------------------------- */
+
+                else {
+
+                    addMessage(
+                        data.message ||
+                        "AlphaBot đã xử lý câu hỏi.",
+                        "bot"
+                    );
+
+                }
+
+
+            }
+            catch (error) {
+
+                console.error(
+                    "AlphaBot error:",
+                    error
+                );
+
+
+                addMessage(
+                    "❌ Không thể kết nối với hệ thống Alpha Books. Vui lòng thử lại sau.",
+                    "bot"
+                );
+
+            }
+
+        }
+
+
+        /* =================================================
+           XỬ LÝ FORM
+        ================================================= */
+
+        form.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const question =
+                    input.value.trim();
+
+
+                if (!question) {
+
+                    input.focus();
+
+                    return;
+
+                }
+
+
+                /* Tin nhắn người dùng */
+
+                addMessage(
+                    question,
+                    "user"
+                );
+
+
+                /* Xóa ô nhập */
+
+                input.value = "";
+
+
+                /* Hiện đang xử lý */
+
+                const typingMessage =
+                    addTypingMessage();
+
+
+                /* Gọi Django */
+
+                await sendQuestion(
+                    question
+                );
+
+
+                /* Xóa trạng thái đang xử lý */
+
+                if (
+                    typingMessage
+                ) {
+
+                    typingMessage.remove();
+
+                }
+
+
+                scrollMessages();
+
+            }
+        );
+
+
+        /* =================================================
+           CÂU HỎI GỢI Ý
+        ================================================= */
+
+        const quickButtons =
+            document.querySelectorAll(
+                ".alphabot-quick-btn"
+            );
+
+
+        quickButtons.forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const question =
+                            button.dataset.question;
+
+
+                        if (!question) {
+
+                            return;
+
+                        }
+
+
+                        input.value =
+                            question;
+
+
+                        form.dispatchEvent(
+                            new Event(
+                                "submit",
+                                {
+                                    bubbles: true,
+                                    cancelable: true
+                                }
+                            )
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        /* =================================================
+           ENTER ĐỂ GỬI
+        ================================================= */
+
+        input.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    event.preventDefault();
+
+                    form.dispatchEvent(
+                        new Event(
+                            "submit",
+                            {
+                                bubbles: true,
+                                cancelable: true
+                            }
+                        )
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           LẤY CSRF COOKIE
+        ================================================= */
+
+        function getCookie(
+            name
+        ) {
+
+            let cookieValue =
+                null;
+
+
+            if (
+                document.cookie &&
+                document.cookie !== ""
+            ) {
+
+                const cookies =
+                    document.cookie.split(
+                        ";"
+                    );
+
+
+                for (
+                    let i = 0;
+                    i < cookies.length;
+                    i++
+                ) {
+
+                    const cookie =
+                        cookies[i].trim();
+
+
+                    if (
+                        cookie.substring(
+                            0,
+                            name.length + 1
+                        ) ===
+                        (
+                            name +
+                            "="
+                        )
+                    ) {
+
+                        cookieValue =
+                            decodeURIComponent(
+                                cookie.substring(
+                                    name.length + 1
+                                )
+                            );
+
+                        break;
+
+                    }
+
+                }
+
+            }
+
+
+            return cookieValue;
+
+        }
+
+    }
+);
+
+</script>
 </body>
 
 </html>

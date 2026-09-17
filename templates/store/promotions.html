@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Khuyến mãi - Alpha-books
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h1 class="section-title">
+                    🔥 Sách đang khuyến mãi
+                </h1>
+
+                <p class="section-subtitle">
+                    Những cuốn sách đang có giá ưu đãi
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if books %}
+
+            <div class="product-grid">
+
+                {% for book in books %}
+
+                    <div class="product-card">
+
+                        <!-- ẢNH -->
+
+                        <a
+                            href="{% url 'book_detail' book.id %}"
+                            class="product-image"
+                        >
+
+                            {% if book.image %}
+
+                                <img
+                                    src="{{ book.image.url }}"
+                                    alt="{{ book.title }}"
+                                >
+
+                            {% else %}
+
+                                <div class="no-image">
+                                    Chưa có ảnh
+                                </div>
+
+                            {% endif %}
+
+                        </a>
+
+
+                        <!-- THÔNG TIN -->
+
+                        <div class="product-info">
+
+                            <a
+                                href="{% url 'book_detail' book.id %}"
+                                class="product-title"
+                            >
+                                {{ book.title }}
+                            </a>
+
+
+                            <div class="product-price">
+
+                                <span class="current-price">
+                                    {{ book.price|floatformat:0 }} ₫
+                                </span>
+
+
+                                <span class="original-price">
+                                    {{ book.original_price|floatformat:0 }} ₫
+                                </span>
+
+                            </div>
+
+
+                            <span class="product-discount">
+                                🔥 Đang khuyến mãi
+                            </span>
+
+
+                            <a
+                                href="{% url 'book_detail' book.id %}"
+                                class="product-button"
+                            >
+                                XEM CHI TIẾT
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+            <div class="empty-books">
+
+                <h3>
+                    Hiện chưa có sách khuyến mãi
+                </h3>
+
+                <p>
+                    Hãy quay lại sau để xem những chương trình
+                    ưu đãi mới nhất.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

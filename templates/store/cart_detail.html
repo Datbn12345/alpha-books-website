@@ -8,164 +8,54 @@ Giỏ hàng - Alpha-books
 
 <div class="container">
 
-    <section class="section">
+    <section class="cart-page">
 
-        <h1 class="section-title">
-            Giỏ hàng
-        </h1>
+        <!-- ========================= -->
+        <!-- HEADER -->
+        <!-- ========================= -->
 
+        <div class="cart-page-header">
+
+            <div>
+                <div class="cart-breadcrumb">
+                    <a href="{% url 'home' %}">Trang chủ</a>
+                    <span>›</span>
+                    <span>Giỏ hàng</span>
+                </div>
+
+                <h1 class="cart-page-title">
+                    Giỏ hàng của bạn
+                </h1>
+
+                {% if items %}
+                    <p class="cart-page-subtitle">
+                        Kiểm tra lại sản phẩm trước khi tiến hành đặt hàng.
+                    </p>
+                {% endif %}
+            </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- THÔNG BÁO -->
+        <!-- ========================= -->
 
         {% if messages %}
 
-            {% for message in messages %}
+            <div class="cart-messages">
 
-                <div class="form-success">
-                    {{ message }}
-                </div>
+                {% for message in messages %}
 
-            {% endfor %}
+                    <div class="cart-message cart-message-{{ message.tags|default:'success' }}">
 
-        {% endif %}
+                        <span class="cart-message-icon">
+                            ✓
+                        </span>
 
-
-        {% if items %}
-
-            <div class="cart-list">
-
-                {% for item in items %}
-
-                    <div class="cart-item">
-
-                        <!-- ẢNH -->
-
-                        <div class="cart-image">
-
-                            {% if item.book.image %}
-
-                                <img
-                                    src="{{ item.book.image.url }}"
-                                    alt="{{ item.book.title }}"
-                                >
-
-                            {% else %}
-
-                                <div class="no-image">
-                                    Chưa có ảnh
-                                </div>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        <!-- THÔNG TIN -->
-
-                        <div class="cart-info">
-
-                            <h3>
-                                {{ item.book.title }}
-                            </h3>
-
-
-                            <p>
-                                Đơn giá:
-                                <strong>
-                                    {{ item.book.price|floatformat:0 }} ₫
-                                </strong>
-                            </p>
-
-
-                            <!-- CẬP NHẬT SỐ LƯỢNG -->
-
-                            <form
-                                method="POST"
-                                action="{% url 'cart_update' item.id %}"
-                                class="cart-quantity-form"
-                            >
-
-                                {% csrf_token %}
-
-                                <label>
-                                    Số lượng:
-                                </label>
-
-
-                                <div class="quantity-control">
-
-                                    <button
-                                        type="button"
-                                        onclick="changeQuantity(this, -1)"
-                                    >
-                                        −
-                                    </button>
-
-
-                                    <input
-                                        type="number"
-                                        name="quantity"
-                                        value="{{ item.quantity }}"
-                                        min="1"
-                                        max="{{ item.book.stock }}"
-                                    >
-
-
-                                    <button
-                                        type="button"
-                                        onclick="changeQuantity(this, 1)"
-                                    >
-                                        +
-                                    </button>
-
-                                </div>
-
-
-                                <button
-                                    type="submit"
-                                    class="update-cart-button"
-                                >
-                                    Cập nhật
-                                </button>
-
-                            </form>
-
-
-                            <!-- THÀNH TIỀN -->
-
-                            <p>
-
-                                Thành tiền:
-
-                                <strong>
-
-                                    {{ item.book.price|floatformat:0 }}
-                                    ₫
-                                    ×
-                                    {{ item.quantity }}
-
-                                </strong>
-
-                            </p>
-
-
-                            <!-- XÓA -->
-
-                            <form
-                                method="POST"
-                                action="{% url 'cart_remove' item.id %}"
-                            >
-
-                                {% csrf_token %}
-
-                                <button
-                                    type="submit"
-                                    class="remove-cart-button"
-                                >
-                                    🗑 Xóa khỏi giỏ hàng
-                                </button>
-
-                            </form>
-
-                        </div>
+                        <span>
+                            {{ message }}
+                        </span>
 
                     </div>
 
@@ -173,62 +63,429 @@ Giỏ hàng - Alpha-books
 
             </div>
 
-
-            <!-- TỔNG TIỀN -->
-
-            <div class="cart-summary">
-
-                <h2>
-
-                    Tổng tiền:
-
-                    {{ total|floatformat:0 }} ₫
-
-                </h2>
+        {% endif %}
 
 
-                <div class="cart-summary-actions">
+        {% if items %}
 
-                    <a
-                        href="{% url 'book_list' %}"
-                        class="secondary-button"
-                    >
-                        TIẾP TỤC MUA HÀNG
-                    </a>
+            <!-- ========================= -->
+            <!-- CART LAYOUT -->
+            <!-- ========================= -->
+
+            <div class="professional-cart-layout">
 
 
-                    <a
-                        href="{% url 'checkout' %}"
-                        class="product-button"
-                    >
-                        TIẾN HÀNH ĐẶT HÀNG
-                    </a>
+                <!-- ========================= -->
+                <!-- DANH SÁCH SẢN PHẨM -->
+                <!-- ========================= -->
+
+                <div class="professional-cart-products">
+
+                    <div class="cart-products-header">
+
+                        <div>
+                            Sản phẩm
+                        </div>
+
+                        <div class="cart-header-price">
+                            Đơn giá
+                        </div>
+
+                        <div class="cart-header-quantity">
+                            Số lượng
+                        </div>
+
+                        <div class="cart-header-total">
+                            Thành tiền
+                        </div>
+
+                        <div></div>
+
+                    </div>
+
+
+                    {% for item in items %}
+
+                        <div class="professional-cart-item">
+
+
+                            <!-- ẢNH + TÊN SÁCH -->
+
+                            <div class="professional-cart-product">
+
+                                <div class="professional-cart-image">
+
+                                    {% if item.book.image %}
+
+                                        <img
+                                            src="{{ item.book.image.url }}"
+                                            alt="{{ item.book.title }}"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="cart-no-image">
+                                            <span>📚</span>
+                                            Chưa có ảnh
+                                        </div>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <div class="professional-cart-product-info">
+
+                                    <a
+                                        href="{% url 'book_detail' item.book.id %}"
+                                        class="professional-cart-product-title"
+                                    >
+                                        {{ item.book.title }}
+                                    </a>
+
+
+                                    {% if item.book.category %}
+
+                                        <span class="professional-cart-category">
+                                            {{ item.book.category.name }}
+                                        </span>
+
+                                    {% endif %}
+
+
+                                    <div class="professional-cart-stock">
+
+                                        {% if item.book.stock > 0 %}
+
+                                            <span class="stock-dot"></span>
+
+                                            Còn hàng
+
+                                        {% else %}
+
+                                            <span class="stock-dot stock-dot-out"></span>
+
+                                            Hết hàng
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ĐƠN GIÁ -->
+
+                            <div class="professional-cart-unit-price">
+
+                                {{ item.book.price|floatformat:0 }} ₫
+
+                            </div>
+
+
+                            <!-- SỐ LƯỢNG -->
+
+                            <div class="professional-cart-quantity">
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'cart_update' item.id %}"
+                                    class="cart-quantity-form"
+                                >
+
+                                    {% csrf_token %}
+
+
+                                    <div class="professional-quantity-control">
+
+                                        <button
+                                            type="button"
+                                            class="quantity-btn quantity-minus"
+                                            onclick="changeQuantity(this, -1)"
+                                            aria-label="Giảm số lượng"
+                                        >
+                                            −
+                                        </button>
+
+
+                                        <input
+                                            type="number"
+                                            name="quantity"
+                                            value="{{ item.quantity }}"
+                                            min="1"
+                                            max="{{ item.book.stock }}"
+                                            aria-label="Số lượng"
+                                        >
+
+
+                                        <button
+                                            type="button"
+                                            class="quantity-btn quantity-plus"
+                                            onclick="changeQuantity(this, 1)"
+                                            aria-label="Tăng số lượng"
+                                        >
+                                            +
+                                        </button>
+
+                                    </div>
+
+
+                                    <button
+                                        type="submit"
+                                        class="professional-update-button"
+                                    >
+                                        Cập nhật
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+
+                            <!-- THÀNH TIỀN -->
+
+                            <div class="professional-cart-total">
+
+                                {{ item.book.price|floatformat:0 }}
+
+                                <span>₫ × {{ item.quantity }}</span>
+
+                            </div>
+
+
+                            <!-- XÓA -->
+
+                            <div class="professional-cart-remove">
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'cart_remove' item.id %}"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="professional-remove-button"
+                                        aria-label="Xóa sản phẩm"
+                                        title="Xóa khỏi giỏ hàng"
+                                    >
+                                        🗑
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+
+                    <!-- TIẾP TỤC MUA HÀNG -->
+
+                    <div class="cart-continue-shopping">
+
+                        <a
+                            href="{% url 'book_list' %}"
+                            class="cart-back-link"
+                        >
+                            <span>←</span>
+                            Tiếp tục mua hàng
+                        </a>
+
+                    </div>
 
                 </div>
+
+
+                <!-- ========================= -->
+                <!-- TÓM TẮT ĐƠN HÀNG -->
+                <!-- ========================= -->
+
+                <aside class="professional-cart-summary">
+
+                    <div class="cart-summary-card">
+
+                        <h2>
+                            Tóm tắt đơn hàng
+                        </h2>
+
+
+                        <div class="cart-summary-line">
+
+                            <span>
+                                Tạm tính
+                            </span>
+
+                            <strong>
+                                {{ total|floatformat:0 }} ₫
+                            </strong>
+
+                        </div>
+
+
+                        <div class="cart-summary-line">
+
+                            <span>
+                                Phí vận chuyển
+                            </span>
+
+                            <span class="cart-shipping-note">
+                                Tính khi đặt hàng
+                            </span>
+
+                        </div>
+
+
+                        <div class="cart-summary-divider"></div>
+
+
+                        <div class="cart-summary-final">
+
+                            <span>
+                                Tổng tiền
+                            </span>
+
+                            <strong>
+                                {{ total|floatformat:0 }} ₫
+                            </strong>
+
+                        </div>
+
+
+                        <p class="cart-summary-note">
+                            Giá đã bao gồm các sản phẩm trong giỏ hàng.
+                        </p>
+
+
+                        <a
+                            href="{% url 'checkout' %}"
+                            class="cart-checkout-button"
+                        >
+                            <span>
+                                TIẾN HÀNH ĐẶT HÀNG
+                            </span>
+
+                            <span>
+                                →
+                            </span>
+                        </a>
+
+
+                        <div class="cart-secure-note">
+
+                            <span>
+                                🔒
+                            </span>
+
+                            <span>
+                                Thông tin đơn hàng của bạn được bảo mật.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CAM KẾT -->
+
+                    <div class="cart-service-box">
+
+                        <div class="cart-service-item">
+
+                            <span class="cart-service-icon">
+                                🚚
+                            </span>
+
+                            <div>
+                                <strong>
+                                    Giao hàng nhanh
+                                </strong>
+
+                                <span>
+                                    Đóng gói cẩn thận
+                                </span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="cart-service-item">
+
+                            <span class="cart-service-icon">
+                                ✓
+                            </span>
+
+                            <div>
+                                <strong>
+                                    Sách chính hãng
+                                </strong>
+
+                                <span>
+                                    Nguồn sách uy tín
+                                </span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="cart-service-item">
+
+                            <span class="cart-service-icon">
+                                ♡
+                            </span>
+
+                            <div>
+                                <strong>
+                                    Hỗ trợ tận tâm
+                                </strong>
+
+                                <span>
+                                    Luôn sẵn sàng hỗ trợ
+                                </span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </aside>
 
             </div>
 
 
         {% else %}
 
+            <!-- ========================= -->
             <!-- GIỎ HÀNG TRỐNG -->
+            <!-- ========================= -->
 
-            <div class="empty-books">
+            <div class="professional-empty-cart">
 
-                <h3>
-                    Giỏ hàng đang trống
-                </h3>
+                <div class="empty-cart-icon">
+                    🛒
+                </div>
+
+
+                <h2>
+                    Giỏ hàng của bạn đang trống
+                </h2>
+
 
                 <p>
-                    Hãy chọn một cuốn sách để bắt đầu mua hàng.
+                    Bạn chưa có sản phẩm nào trong giỏ hàng.
+                    Hãy khám phá những cuốn sách thú vị của Alpha Books.
                 </p>
 
 
                 <a
                     href="{% url 'book_list' %}"
-                    class="product-button"
+                    class="empty-cart-button"
                 >
-                    XEM SÁCH
+                    KHÁM PHÁ SÁCH
                 </a>
 
             </div>
@@ -244,43 +501,37 @@ Giỏ hàng - Alpha-books
 
 function changeQuantity(button, amount) {
 
-    const form = button.closest(
-        ".cart-quantity-form"
-    );
+    const form = button.closest(".cart-quantity-form");
+
+    if (!form) {
+        return;
+    }
 
     const input = form.querySelector(
         'input[name="quantity"]'
     );
 
-    let value = parseInt(
-        input.value
-    ) || 1;
+    if (!input) {
+        return;
+    }
 
+    let value = parseInt(input.value) || 1;
 
-    const min = parseInt(
-        input.min
-    ) || 1;
+    const min = parseInt(input.min) || 1;
 
-
-    const max = parseInt(
-        input.max
-    );
+    const max = parseInt(input.max);
 
 
     value += amount;
 
 
     if (value < min) {
-
         value = min;
-
     }
 
 
     if (!isNaN(max) && value > max) {
-
         value = max;
-
     }
 
 

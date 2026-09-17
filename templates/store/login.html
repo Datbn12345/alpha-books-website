@@ -1,74 +1,834 @@
 {% extends "base.html" %}
 
 {% block title %}
-Đăng nhập - Alpha-books
+Đăng nhập - Alpha Books
 {% endblock %}
 
 {% block content %}
 
-<div class="container">
+<style>
+    /* =====================================================
+       ALPHA BOOKS - LOGIN
+       Main color: Orange
+    ===================================================== */
 
-    <section class="auth-page">
+    .alpha-login-page {
+        min-height: calc(100vh - 80px);
+        background: #f7f7f7;
+        padding: 45px 20px 60px;
 
-        <h1 class="section-title">
-            Đăng nhập
-        </h1>
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
 
-        {% if error %}
+    .alpha-login-wrapper {
+        width: 100%;
+        max-width: 430px;
+    }
 
-            <div class="error-message">
-                {{ error }}
+
+    /* =====================================================
+       BRAND
+    ===================================================== */
+
+    .alpha-login-brand {
+        text-align: center;
+        margin-bottom: 22px;
+    }
+
+    .alpha-login-brand-name {
+        margin: 0;
+
+        color: #f4511e;
+
+        font-size: 23px;
+        font-weight: 800;
+        letter-spacing: 1.4px;
+    }
+
+    .alpha-login-brand-text {
+        margin: 5px 0 0;
+
+        color: #888;
+
+        font-size: 13px;
+    }
+
+
+    /* =====================================================
+       LOGIN CARD
+    ===================================================== */
+
+    .alpha-login-card {
+        background: #ffffff;
+
+        border: 1px solid #e8e8e8;
+        border-radius: 10px;
+
+        box-shadow:
+            0 8px 30px rgba(0, 0, 0, 0.06);
+
+        overflow: hidden;
+    }
+
+
+    /* =====================================================
+       CARD HEADER
+    ===================================================== */
+
+    .alpha-login-card-header {
+        padding: 28px 36px 18px;
+
+        text-align: center;
+    }
+
+    .alpha-login-title {
+        margin: 0;
+
+        color: #222;
+
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .alpha-login-description {
+        margin: 7px 0 0;
+
+        color: #777;
+
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+
+    /* =====================================================
+       FORM
+    ===================================================== */
+
+    .alpha-login-form {
+        padding: 0 36px 30px;
+    }
+
+
+    /* =====================================================
+       ERROR
+    ===================================================== */
+
+    .alpha-login-error {
+        margin-bottom: 18px;
+
+        padding: 12px 14px;
+
+        background: #fff5f2;
+
+        border: 1px solid #ffd4c7;
+        border-radius: 6px;
+
+        color: #c0391b;
+
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .alpha-login-error strong {
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+       FORM GROUP
+    ===================================================== */
+
+    .alpha-form-group {
+        margin-bottom: 17px;
+    }
+
+    .alpha-form-label {
+        display: block;
+
+        margin-bottom: 7px;
+
+        color: #333;
+
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+
+    /* =====================================================
+       INPUT
+    ===================================================== */
+
+    .alpha-input-wrapper {
+        position: relative;
+    }
+
+    .alpha-form-input {
+        width: 100%;
+        height: 47px;
+
+        padding: 0 14px;
+
+        border: 1px solid #d8d8d8;
+        border-radius: 6px;
+
+        outline: none;
+
+        background: #ffffff;
+
+        color: #222;
+
+        font-size: 14px;
+
+        transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .alpha-form-input::placeholder {
+        color: #aaa;
+    }
+
+    .alpha-form-input:hover {
+        border-color: #bcbcbc;
+    }
+
+    .alpha-form-input:focus {
+        border-color: #f4511e;
+
+        box-shadow:
+            0 0 0 3px rgba(244, 81, 30, 0.10);
+    }
+
+    .alpha-password-input {
+        padding-right: 48px;
+    }
+
+
+    /* =====================================================
+       PASSWORD BUTTON
+    ===================================================== */
+
+    .alpha-password-toggle {
+        position: absolute;
+
+        top: 50%;
+        right: 11px;
+
+        transform: translateY(-50%);
+
+        width: 32px;
+        height: 32px;
+
+        padding: 0;
+
+        border: none;
+
+        background: transparent;
+
+        color: #888;
+
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        transition: color 0.2s ease;
+    }
+
+    .alpha-password-toggle:hover {
+        color: #f4511e;
+    }
+
+    .alpha-password-toggle svg {
+        width: 19px;
+        height: 19px;
+    }
+
+
+    /* =====================================================
+       FORGOT PASSWORD
+    ===================================================== */
+
+    .alpha-login-options {
+        display: flex;
+        justify-content: flex-end;
+
+        margin-top: -2px;
+        margin-bottom: 19px;
+    }
+
+    .alpha-forgot-password {
+        color: #f4511e;
+
+        font-size: 13px;
+        font-weight: 500;
+
+        text-decoration: none;
+
+        transition: color 0.2s ease;
+    }
+
+    .alpha-forgot-password:hover {
+        color: #e64a19;
+
+        text-decoration: underline;
+    }
+
+
+    /* =====================================================
+       LOGIN BUTTON
+    ===================================================== */
+
+    .alpha-login-button {
+        width: 100%;
+        height: 47px;
+
+        border: none;
+        border-radius: 6px;
+
+        background: #f4511e;
+
+        color: #ffffff;
+
+        font-size: 14px;
+        font-weight: 700;
+
+        letter-spacing: 0.4px;
+
+        cursor: pointer;
+
+        transition:
+            background 0.2s ease,
+            box-shadow 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .alpha-login-button:hover {
+        background: #e64a19;
+
+        box-shadow:
+            0 6px 16px rgba(244, 81, 30, 0.20);
+
+        transform: translateY(-1px);
+    }
+
+    .alpha-login-button:active {
+        transform: translateY(0);
+
+        box-shadow: none;
+    }
+
+
+    /* =====================================================
+       DIVIDER
+    ===================================================== */
+
+    .alpha-divider {
+        display: flex;
+        align-items: center;
+
+        gap: 13px;
+
+        margin: 23px 0;
+
+        color: #aaa;
+
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .alpha-divider::before,
+    .alpha-divider::after {
+        content: "";
+
+        flex: 1;
+
+        height: 1px;
+
+        background: #e7e7e7;
+    }
+
+
+    /* =====================================================
+       REGISTER
+    ===================================================== */
+
+    .alpha-register-box {
+        padding: 15px;
+
+        text-align: center;
+
+        background: #fffaf8;
+
+        border: 1px solid #ffe3d8;
+        border-radius: 6px;
+    }
+
+    .alpha-register-text {
+        margin: 0;
+
+        color: #666;
+
+        font-size: 13px;
+    }
+
+    .alpha-register-link {
+        margin-left: 4px;
+
+        color: #f4511e;
+
+        font-weight: 700;
+
+        text-decoration: none;
+
+        transition: color 0.2s ease;
+    }
+
+    .alpha-register-link:hover {
+        color: #e64a19;
+
+        text-decoration: underline;
+    }
+
+
+    /* =====================================================
+       SECURITY
+    ===================================================== */
+
+    .alpha-security-note {
+        display: flex;
+        align-items: flex-start;
+
+        gap: 8px;
+
+        margin-top: 20px;
+
+        color: #999;
+
+        font-size: 11px;
+
+        line-height: 1.6;
+    }
+
+    .alpha-security-icon {
+        flex-shrink: 0;
+
+        width: 17px;
+        height: 17px;
+
+        margin-top: 1px;
+
+        color: #f4511e;
+    }
+
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+
+    .alpha-login-footer {
+        margin-top: 20px;
+
+        text-align: center;
+
+        color: #aaa;
+
+        font-size: 11px;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 600px) {
+
+        .alpha-login-page {
+            min-height: calc(100vh - 60px);
+
+            padding: 30px 15px 45px;
+        }
+
+        .alpha-login-wrapper {
+            max-width: 100%;
+        }
+
+        .alpha-login-brand {
+            margin-bottom: 18px;
+        }
+
+        .alpha-login-brand-name {
+            font-size: 21px;
+        }
+
+        .alpha-login-card-header {
+            padding: 24px 22px 17px;
+        }
+
+        .alpha-login-form {
+            padding: 0 22px 25px;
+        }
+
+        .alpha-login-title {
+            font-size: 23px;
+        }
+    }
+</style>
+
+
+<div class="alpha-login-page">
+
+    <div class="alpha-login-wrapper">
+
+
+        <!-- =================================================
+             ALPHA BOOKS BRAND
+        ================================================== -->
+
+        <div class="alpha-login-brand">
+
+            <h1 class="alpha-login-brand-name">
+                ALPHA BOOKS
+            </h1>
+
+            <p class="alpha-login-brand-text">
+                Mở sách · Mở tri thức · Mở tương lai
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             LOGIN CARD
+        ================================================== -->
+
+        <div class="alpha-login-card">
+
+
+            <!-- CARD HEADER -->
+
+            <div class="alpha-login-card-header">
+
+                <h2 class="alpha-login-title">
+                    Đăng nhập
+                </h2>
+
+                <p class="alpha-login-description">
+                    Đăng nhập để tiếp tục mua sắm tại Alpha Books
+                </p>
+
             </div>
 
-        {% endif %}
 
-        <form method="POST">
+            <!-- LOGIN FORM -->
 
-            {% csrf_token %}
+            <form
+                method="POST"
+                class="alpha-login-form"
+            >
 
-            <div class="form-group">
+                {% csrf_token %}
 
-                <label>
-                    Tên đăng nhập
-                </label>
 
-                <input
-                    type="text"
-                    name="username"
-                    required
+                <!-- ERROR -->
+
+                {% if error %}
+
+                    <div class="alpha-login-error">
+
+                        <strong>
+                            Đăng nhập không thành công.
+                        </strong>
+
+                        <br>
+
+                        {{ error }}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- USERNAME -->
+
+                <div class="alpha-form-group">
+
+                    <label
+                        for="username"
+                        class="alpha-form-label"
+                    >
+                        Tên đăng nhập
+                    </label>
+
+                    <div class="alpha-input-wrapper">
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            class="alpha-form-input"
+                            placeholder="Nhập tên đăng nhập"
+                            autocomplete="username"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="alpha-form-group">
+
+                    <label
+                        for="password"
+                        class="alpha-form-label"
+                    >
+                        Mật khẩu
+                    </label>
+
+                    <div class="alpha-input-wrapper">
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="alpha-form-input alpha-password-input"
+                            placeholder="Nhập mật khẩu"
+                            autocomplete="current-password"
+                            required
+                        >
+
+
+                        <!-- SHOW / HIDE PASSWORD -->
+
+                        <button
+                            type="button"
+                            class="alpha-password-toggle"
+                            onclick="togglePassword()"
+                            aria-label="Hiển thị mật khẩu"
+                        >
+
+                            <!-- OPEN EYE -->
+
+                            <svg
+                                id="eye-open"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="1.8"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                />
+
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="1.8"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                />
+
+                            </svg>
+
+
+                            <!-- CLOSED EYE -->
+
+                            <svg
+                                id="eye-closed"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                style="display: none;"
+                            >
+
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="1.8"
+                                    d="M3 3l18 18"
+                                />
+
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="1.8"
+                                    d="M10.584 10.587a2 2 0 002.829 2.826"
+                                />
+
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="1.8"
+                                    d="M9.88 5.09A10.5 10.5 0 0112 5c4.477 0 8.268 2.943 9.542 7a10.5 10.5 0 01-4.132 5.411"
+                                />
+
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="1.8"
+                                    d="M6.61 6.61A10.5 10.5 0 002.458 12C3.732 16.057 7.523 19 12 19c1.61 0 3.12-.362 4.467-1.006"
+                                />
+
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FORGOT PASSWORD -->
+
+                <div class="alpha-login-options">
+
+                    <a
+                        href="{% url 'password_reset' %}"
+                        class="alpha-forgot-password"
+                    >
+                        Quên mật khẩu?
+                    </a>
+
+                </div>
+
+
+                <!-- LOGIN BUTTON -->
+
+                <button
+                    type="submit"
+                    class="alpha-login-button"
                 >
+                    ĐĂNG NHẬP
+                </button>
 
-            </div>
 
-            <div class="form-group">
+                <!-- DIVIDER -->
 
-                <label>
-                    Mật khẩu
-                </label>
+                <div class="alpha-divider">
+                    HOẶC
+                </div>
 
-                <input
-                    type="password"
-                    name="password"
-                    required
-                >
 
-            </div>
+                <!-- REGISTER -->
 
-            <button type="submit">
-                ĐĂNG NHẬP
-            </button>
+                <div class="alpha-register-box">
 
-        </form>
+                    <p class="alpha-register-text">
 
-        <p>
-            Chưa có tài khoản?
-            <a href="{% url 'register' %}">
-                Đăng ký ngay
-            </a>
-        </p>
+                        Bạn chưa có tài khoản?
 
-    </section>
+                        <a
+                            href="{% url 'register' %}"
+                            class="alpha-register-link"
+                        >
+                            Đăng ký ngay
+                        </a>
+
+                    </p>
+
+                </div>
+
+
+                <!-- SECURITY -->
+
+                <div class="alpha-security-note">
+
+                    <svg
+                        class="alpha-security-icon"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.8"
+                            d="M12 3l7 4v5c0 4.5-2.9 7.7-7 9-4.1-1.3-7-4.5-7-9V7l7-4z"
+                        />
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.8"
+                            d="M9 12l2 2 4-4"
+                        />
+
+                    </svg>
+
+                    <span>
+                        Thông tin tài khoản của bạn được bảo mật
+                        và chỉ được sử dụng cho việc quản lý tài khoản,
+                        đơn hàng và dịch vụ của Alpha Books.
+                    </span>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <div class="alpha-login-footer">
+
+            © 2026 Alpha Books · Website bán sách trực tuyến
+
+        </div>
+
+    </div>
 
 </div>
+
+
+<script>
+
+function togglePassword() {
+
+    const passwordInput =
+        document.getElementById("password");
+
+    const eyeOpen =
+        document.getElementById("eye-open");
+
+    const eyeClosed =
+        document.getElementById("eye-closed");
+
+
+    if (passwordInput.type === "password") {
+
+        passwordInput.type = "text";
+
+        eyeOpen.style.display = "none";
+
+        eyeClosed.style.display = "block";
+
+    } else {
+
+        passwordInput.type = "password";
+
+        eyeOpen.style.display = "block";
+
+        eyeClosed.style.display = "none";
+
+    }
+
+}
+
+</script>
 
 {% endblock %}

@@ -8,46 +8,131 @@
 
 <div class="container">
 
-    <section class="section">
+    <section class="checkout-page">
 
-        <h1 class="section-title">
-            Đặt hàng
-        </h1>
+        <!-- ========================= -->
+        <!-- BREADCRUMB -->
+        <!-- ========================= -->
 
+        <div class="checkout-breadcrumb">
+
+            <a href="{% url 'home' %}">
+                Trang chủ
+            </a>
+
+            <span>›</span>
+
+            <a href="{% url 'cart_detail' %}">
+                Giỏ hàng
+            </a>
+
+            <span>›</span>
+
+            <span>
+                Đặt hàng
+            </span>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- PAGE HEADER -->
+        <!-- ========================= -->
+
+        <div class="checkout-header">
+
+            <div>
+
+                <h1 class="checkout-title">
+                    Xác nhận đặt hàng
+                </h1>
+
+                <p class="checkout-subtitle">
+                    Vui lòng kiểm tra thông tin trước khi hoàn tất đơn hàng.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- ERROR -->
+        <!-- ========================= -->
 
         {% if error %}
 
-            <div class="form-error">
-                {{ error }}
+            <div class="checkout-error">
+
+                <span class="checkout-error-icon">
+                    !
+                </span>
+
+                <div>
+
+                    <strong>
+                        Không thể đặt hàng
+                    </strong>
+
+                    <p>
+                        {{ error }}
+                    </p>
+
+                </div>
+
             </div>
 
         {% endif %}
 
 
-        <div class="checkout-layout">
+        <!-- ========================= -->
+        <!-- MAIN LAYOUT -->
+        <!-- ========================= -->
 
-            <!-- ========================= -->
-            <!-- THÔNG TIN NHẬN HÀNG -->
-            <!-- ========================= -->
-
-            <div class="checkout-form">
-
-                <h2>
-                    Thông tin nhận hàng
-                </h2>
+        <div class="professional-checkout-layout">
 
 
-                <form method="POST">
+            <!-- ================================================= -->
+            <!-- LEFT: CUSTOMER INFORMATION -->
+            <!-- ================================================= -->
+
+            <div class="checkout-main-card">
+
+                <div class="checkout-card-header">
+
+                    <div class="checkout-section-number">
+                        1
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Thông tin nhận hàng
+                        </h2>
+
+                        <p>
+                            Nhập thông tin để chúng tôi giao sách đến bạn.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <form method="POST" class="professional-checkout-form">
 
                     {% csrf_token %}
 
 
-                    <!-- HỌ TÊN -->
+                    <!-- ========================= -->
+                    <!-- FULL NAME -->
+                    <!-- ========================= -->
 
-                    <div class="form-group">
+                    <div class="checkout-form-group">
 
                         <label for="full_name">
-                            Họ và tên *
+                            Họ và tên người nhận
+                            <span>*</span>
                         </label>
 
                         <input
@@ -56,62 +141,95 @@
                             name="full_name"
                             value="{{ request.user.get_full_name }}"
                             placeholder="Nhập họ và tên người nhận"
+                            autocomplete="name"
                             required
                         >
 
                     </div>
 
 
-                    <!-- SỐ ĐIỆN THOẠI -->
+                    <!-- ========================= -->
+                    <!-- PHONE -->
+                    <!-- ========================= -->
 
-                    <div class="form-group">
+                    <div class="checkout-form-group">
 
                         <label for="phone">
-                            Số điện thoại *
+                            Số điện thoại
+                            <span>*</span>
                         </label>
 
                         <input
                             type="tel"
                             id="phone"
                             name="phone"
-                            placeholder="Nhập số điện thoại"
+                            value="{{ phone|default:'' }}"
+                            placeholder="Nhập số điện thoại (10 chữ số)"
+                            inputmode="numeric"
+                            maxlength="10"
+                            pattern="0[35789][0-9]{8}"
                             required
                         >
 
                     </div>
 
 
-                    <!-- ĐỊA CHỈ -->
+                    <!-- ========================= -->
+                    <!-- ADDRESS -->
+                    <!-- ========================= -->
 
-                    <div class="form-group">
+                    <div class="checkout-form-group">
 
                         <label for="address">
-                            Địa chỉ nhận hàng *
+                            Địa chỉ nhận hàng
+                            <span>*</span>
                         </label>
 
                         <textarea
                             id="address"
                             name="address"
                             rows="4"
-                            placeholder="Nhập địa chỉ nhận hàng"
+                            placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố..."
+                            autocomplete="street-address"
                             required
                         ></textarea>
 
                     </div>
 
 
-                    <!-- PHƯƠNG THỨC THANH TOÁN -->
+                    <!-- ========================= -->
+                    <!-- PAYMENT -->
+                    <!-- ========================= -->
 
-                    <div class="form-group">
+                    <div class="checkout-payment-section">
 
-                        <label>
-                            Phương thức thanh toán
-                        </label>
+                        <div class="checkout-subsection-title">
+
+                            <div class="checkout-section-number small">
+                                2
+                            </div>
+
+                            <div>
+
+                                <h2>
+                                    Phương thức thanh toán
+                                </h2>
+
+                                <p>
+                                    Chọn phương thức thanh toán phù hợp với bạn.
+                                </p>
+
+                            </div>
+
+                        </div>
 
 
-                        <div class="payment-options">
+                        <div class="professional-payment-options">
 
-                            <label class="payment-option">
+
+                            <!-- COD -->
+
+                            <label class="professional-payment-option">
 
                                 <input
                                     type="radio"
@@ -120,14 +238,36 @@
                                     checked
                                 >
 
-                                <span>
-                                    💵 Thanh toán khi nhận hàng (COD)
-                                </span>
+                                <div class="payment-option-content">
+
+                                    <div class="payment-option-icon">
+                                        💵
+                                    </div>
+
+                                    <div class="payment-option-info">
+
+                                        <strong>
+                                            Thanh toán khi nhận hàng
+                                        </strong>
+
+                                        <span>
+                                            Thanh toán bằng tiền mặt khi nhận được sách.
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="payment-radio">
+                                    ✓
+                                </div>
 
                             </label>
 
 
-                            <label class="payment-option">
+                            <!-- BANK -->
+
+                            <label class="professional-payment-option">
 
                                 <input
                                     type="radio"
@@ -135,14 +275,36 @@
                                     value="bank"
                                 >
 
-                                <span>
-                                    🏦 Chuyển khoản ngân hàng
-                                </span>
+                                <div class="payment-option-content">
+
+                                    <div class="payment-option-icon">
+                                        🏦
+                                    </div>
+
+                                    <div class="payment-option-info">
+
+                                        <strong>
+                                            Chuyển khoản ngân hàng
+                                        </strong>
+
+                                        <span>
+                                            Thanh toán bằng hình thức chuyển khoản.
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="payment-radio">
+                                    ✓
+                                </div>
 
                             </label>
 
 
-                            <label class="payment-option">
+                            <!-- MOMO -->
+
+                            <label class="professional-payment-option">
 
                                 <input
                                     type="radio"
@@ -150,9 +312,29 @@
                                     value="momo"
                                 >
 
-                                <span>
-                                    📱 Ví MoMo
-                                </span>
+                                <div class="payment-option-content">
+
+                                    <div class="payment-option-icon">
+                                        📱
+                                    </div>
+
+                                    <div class="payment-option-info">
+
+                                        <strong>
+                                            Ví MoMo
+                                        </strong>
+
+                                        <span>
+                                            Thanh toán nhanh chóng qua ví điện tử MoMo.
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="payment-radio">
+                                    ✓
+                                </div>
 
                             </label>
 
@@ -161,42 +343,76 @@
                     </div>
 
 
-                    <!-- GHI CHÚ -->
+                    <!-- ========================= -->
+                    <!-- NOTE -->
+                    <!-- ========================= -->
 
-                    <div class="form-group">
+                    <div class="checkout-note-section">
 
-                        <label for="note">
-                            Ghi chú đơn hàng
-                        </label>
+                        <div class="checkout-form-group">
 
-                        <textarea
-                            id="note"
-                            name="note"
-                            rows="3"
-                            placeholder="Ví dụ: Giao hàng giờ hành chính..."
-                        ></textarea>
+                            <label for="note">
+                                Ghi chú đơn hàng
+                                <small>(Không bắt buộc)</small>
+                            </label>
+
+                            <textarea
+                                id="note"
+                                name="note"
+                                rows="3"
+                                placeholder="Ví dụ: Giao hàng giờ hành chính, gọi trước khi giao..."
+                            ></textarea>
+
+                        </div>
 
                     </div>
 
 
-                    <!-- NÚT -->
+                    <!-- ========================= -->
+                    <!-- ACTIONS -->
+                    <!-- ========================= -->
 
-                    <div class="checkout-actions">
+                    <div class="professional-checkout-actions">
 
                         <a
                             href="{% url 'cart_detail' %}"
-                            class="secondary-button"
+                            class="checkout-back-button"
                         >
-                            ← QUAY LẠI GIỎ HÀNG
+                            <span>←</span>
+                            Quay lại giỏ hàng
                         </a>
 
 
                         <button
                             type="submit"
-                            class="product-button"
+                            class="professional-place-order-button"
                         >
-                            XÁC NHẬN ĐẶT HÀNG
+
+                            <span>
+                                XÁC NHẬN ĐẶT HÀNG
+                            </span>
+
+                            <span class="place-order-arrow">
+                                →
+                            </span>
+
                         </button>
+
+                    </div>
+
+
+                    <!-- SECURITY -->
+
+                    <div class="checkout-security">
+
+                        <span class="checkout-security-icon">
+                            🔒
+                        </span>
+
+                        <span>
+                            Thông tin của bạn được bảo mật và chỉ được sử dụng
+                            cho việc xử lý đơn hàng.
+                        </span>
 
                     </div>
 
@@ -205,104 +421,237 @@
             </div>
 
 
-            <!-- ========================= -->
-            <!-- TÓM TẮT ĐƠN HÀNG -->
-            <!-- ========================= -->
+            <!-- ================================================= -->
+            <!-- RIGHT: ORDER SUMMARY -->
+            <!-- ================================================= -->
 
-            <div class="checkout-summary">
-
-                <h2>
-                    Đơn hàng của bạn
-                </h2>
+            <aside class="professional-checkout-sidebar">
 
 
-                <div class="checkout-items">
+                <!-- ========================= -->
+                <!-- ORDER SUMMARY -->
+                <!-- ========================= -->
 
-                    {% for item in items %}
+                <div class="checkout-summary-card">
 
-                        <div class="checkout-item">
+                    <div class="checkout-summary-header">
 
-                            <!-- ẢNH -->
+                        <div>
 
-                            <div class="checkout-item-image">
+                            <h2>
+                                Đơn hàng của bạn
+                            </h2>
 
-                                {% if item.book.image %}
-
-                                    <img
-                                        src="{{ item.book.image.url }}"
-                                        alt="{{ item.book.title }}"
-                                    >
-
-                                {% else %}
-
-                                    <div class="no-image">
-                                        Chưa có ảnh
-                                    </div>
-
+                            <span>
+                                {% if items %}
+                                    {{ items|length }} sản phẩm
                                 {% endif %}
-
-                            </div>
-
-
-                            <!-- THÔNG TIN -->
-
-                            <div class="checkout-item-info">
-
-                                <h3>
-                                    {{ item.book.title }}
-                                </h3>
-
-                                <p>
-                                    Số lượng:
-                                    <strong>
-                                        {{ item.quantity }}
-                                    </strong>
-                                </p>
-
-                                <p>
-                                    Đơn giá:
-                                    <strong>
-                                        {{ item.book.price|floatformat:0 }} ₫
-                                    </strong>
-                                </p>
-
-                            </div>
-
-
-                            <!-- THÀNH TIỀN -->
-
-                            <div class="checkout-item-price">
-
-                                {{ item.book.price|floatformat:0 }} ₫
-
-                                ×
-
-                                {{ item.quantity }}
-
-                            </div>
+                            </span>
 
                         </div>
 
-                    {% endfor %}
+                    </div>
+
+
+                    <!-- PRODUCTS -->
+
+                    <div class="professional-checkout-items">
+
+                        {% for item in items %}
+
+                            <div class="professional-checkout-item">
+
+
+                                <!-- IMAGE -->
+
+                                <div class="professional-checkout-item-image">
+
+                                    {% if item.book.image %}
+
+                                        <img
+                                            src="{{ item.book.image.url }}"
+                                            alt="{{ item.book.title }}"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="checkout-no-image">
+                                            📚
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <span class="checkout-item-quantity">
+                                        {{ item.quantity }}
+                                    </span>
+
+                                </div>
+
+
+                                <!-- INFO -->
+
+                                <div class="professional-checkout-item-info">
+
+                                    <h3>
+                                        {{ item.book.title }}
+                                    </h3>
+
+                                    <p>
+                                        {{ item.book.price|floatformat:0 }} ₫
+                                        ×
+                                        {{ item.quantity }}
+                                    </p>
+
+                                </div>
+
+
+                                <!-- TOTAL -->
+
+                                <div class="professional-checkout-item-total">
+
+                                    {{ item.book.price|floatformat:0 }} ₫
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- TOTAL -->
+
+                    <div class="checkout-summary-calculation">
+
+                        <div class="checkout-calculation-line">
+
+                            <span>
+                                Tạm tính
+                            </span>
+
+                            <strong>
+                                {{ total|floatformat:0 }} ₫
+                            </strong>
+
+                        </div>
+
+
+                        <div class="checkout-calculation-line">
+
+                            <span>
+                                Phí vận chuyển
+                            </span>
+
+                            <span class="checkout-free-shipping">
+                                Sẽ thông báo
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="checkout-summary-divider"></div>
+
+
+                    <div class="checkout-grand-total">
+
+                        <span>
+                            Tổng thanh toán
+                        </span>
+
+                        <strong>
+                            {{ total|floatformat:0 }} ₫
+                        </strong>
+
+                    </div>
+
+
+                    <p class="checkout-total-note">
+                        Tổng tiền chưa bao gồm phí vận chuyển nếu có.
+                    </p>
 
                 </div>
 
 
-                <!-- TỔNG -->
+                <!-- ========================= -->
+                <!-- BENEFITS -->
+                <!-- ========================= -->
 
-                <div class="checkout-total">
+                <div class="checkout-benefits-card">
 
-                    <span>
-                        Tổng tiền
-                    </span>
+                    <h3>
+                        Alpha Books cam kết
+                    </h3>
 
-                    <strong>
-                        {{ total|floatformat:0 }} ₫
-                    </strong>
+
+                    <div class="checkout-benefit">
+
+                        <div class="checkout-benefit-icon">
+                            ✓
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Sách chính hãng
+                            </strong>
+
+                            <span>
+                                Nguồn sách uy tín, chất lượng.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="checkout-benefit">
+
+                        <div class="checkout-benefit-icon">
+                            🚚
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Đóng gói cẩn thận
+                            </strong>
+
+                            <span>
+                                Bảo vệ sách trong quá trình vận chuyển.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="checkout-benefit">
+
+                        <div class="checkout-benefit-icon">
+                            ♡
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Hỗ trợ tận tâm
+                            </strong>
+
+                            <span>
+                                Sẵn sàng hỗ trợ khi bạn cần.
+                            </span>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
-            </div>
+            </aside>
 
         </div>
 

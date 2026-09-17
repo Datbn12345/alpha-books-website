@@ -1,213 +1,488 @@
 {% extends "base.html" %}
 
 {% block title %}
-Tất cả sách - Alpha-books
+Sách - Alpha-books
 {% endblock %}
+
 
 {% block content %}
 
 <div class="container">
 
-    <section class="section">
+    <!-- =====================================================
+         HEADER TRANG
+    ====================================================== -->
 
-        <h1 class="section-title">
-            Tất cả sách
-        </h1>
+    <section class="section books-page">
 
-        <!-- TÌM KIẾM + LỌC + SẮP XẾP -->
-        <form method="GET" class="book-filter">
+        <div class="books-page-header">
 
-            <!-- Tìm kiếm -->
-            <div class="filter-search">
-                <input
-                    type="text"
-                    name="q"
-                    value="{{ query }}"
-                    placeholder="Tìm kiếm sách..."
-                >
+            <div>
 
-                <button type="submit">
-                    Tìm kiếm
-                </button>
+                <h1 class="section-title">
+                    {% if query %}
+                        Kết quả tìm kiếm
+                    {% else %}
+                        Tất cả sách
+                    {% endif %}
+                </h1>
+
+                {% if query %}
+
+                    <p class="section-subtitle">
+                        Kết quả tìm kiếm cho:
+                        <strong>"{{ query }}"</strong>
+                    </p>
+
+                {% else %}
+
+                    <p class="section-subtitle">
+                        Khám phá những cuốn sách mới nhất
+                        tại Alpha-books.
+                    </p>
+
+                {% endif %}
+
             </div>
 
-            <!-- Danh mục -->
-            <div class="filter-item">
+        </div>
 
-                <label for="category">
-                    Danh mục
-                </label>
 
-                <select name="category" id="category">
+        <!-- =====================================================
+             KHU VỰC SÁCH
+        ====================================================== -->
 
-                    <option value="">
-                        Tất cả danh mục
-                    </option>
+        <div class="books-layout">
+
+
+            <!-- =================================================
+                 SIDEBAR DANH MỤC
+            ================================================== -->
+
+            <aside class="books-sidebar">
+
+                <div class="sidebar-title">
+
+                    <span class="sidebar-icon">
+                        ☰
+                    </span>
+
+                    DANH MỤC SÁCH
+
+                </div>
+
+
+                <div class="category-list">
+
+                    <!-- TẤT CẢ -->
+
+                    <a
+                        href="{% url 'book_list' %}"
+                        class="
+                            category-item
+                            {% if not selected_category %}
+                                active
+                            {% endif %}
+                        "
+                    >
+
+                        <span>
+                            Tất cả sách
+                        </span>
+
+                        <span class="category-arrow">
+                            ›
+                        </span>
+
+                    </a>
+
+
+                    <!-- DANH MỤC -->
 
                     {% for category in categories %}
 
-                        <option
-                            value="{{ category.id }}"
-                            {% if selected_category == category.id|stringformat:"s" %}
-                                selected
-                            {% endif %}
+                        <a
+                            href="?category={{ category.id }}"
+                            class="
+                                category-item
+                                {% if selected_category == category.id|stringformat:"s" %}
+                                    active
+                                {% endif %}
+                            "
                         >
-                            {{ category.name }}
-                        </option>
+
+                            <span>
+                                {{ category.name }}
+                            </span>
+
+                            <span class="category-arrow">
+                                ›
+                            </span>
+
+                        </a>
 
                     {% endfor %}
 
-                </select>
+                </div>
 
-            </div>
+            </aside>
 
-            <!-- Sắp xếp -->
-            <div class="filter-item">
 
-                <label for="sort">
-                    Sắp xếp
-                </label>
 
-                <select name="sort" id="sort">
+            <!-- =================================================
+                 KHU VỰC SẢN PHẨM
+            ================================================== -->
 
-                    <option
-                        value="newest"
-                        {% if selected_sort == "newest" %}
-                            selected
-                        {% endif %}
+            <main class="books-main">
+
+
+                <!-- =================================================
+                     THANH CÔNG CỤ
+                ================================================== -->
+
+                <div class="books-toolbar">
+
+
+                    <!-- SẮP XẾP -->
+
+                    <form
+                        method="get"
+                        class="sort-form"
                     >
-                        Mới nhất
-                    </option>
 
-                    <option
-                        value="price_asc"
-                        {% if selected_sort == "price_asc" %}
-                            selected
-                        {% endif %}
-                    >
-                        Giá thấp → cao
-                    </option>
+                        {% if query %}
 
-                    <option
-                        value="price_desc"
-                        {% if selected_sort == "price_desc" %}
-                            selected
-                        {% endif %}
-                    >
-                        Giá cao → thấp
-                    </option>
-
-                </select>
-
-            </div>
-
-            <button type="submit">
-                Áp dụng
-            </button>
-
-        </form>
-
-
-        <!-- KẾT QUẢ -->
-        {% if query %}
-
-            <p class="search-result">
-                Kết quả tìm kiếm cho:
-                <strong>"{{ query }}"</strong>
-            </p>
-
-        {% endif %}
-
-
-        <!-- DANH SÁCH SÁCH -->
-        <div class="product-grid">
-
-            {% for book in books %}
-
-                <div class="product-card">
-
-                    <div class="product-image">
-
-                        {% if book.image %}
-
-                            <img
-                                src="{{ book.image.url }}"
-                                alt="{{ book.title }}"
+                            <input
+                                type="hidden"
+                                name="q"
+                                value="{{ query }}"
                             >
+
+                        {% endif %}
+
+
+                        {% if selected_category %}
+
+                            <input
+                                type="hidden"
+                                name="category"
+                                value="{{ selected_category }}"
+                            >
+
+                        {% endif %}
+
+
+                        <label for="sort">
+                            Sắp xếp:
+                        </label>
+
+
+                        <select
+                            id="sort"
+                            name="sort"
+                            onchange="this.form.submit()"
+                        >
+
+                            <option
+                                value="newest"
+                                {% if selected_sort == "newest" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Mới nhất
+                            </option>
+
+
+                            <option
+                                value="price_asc"
+                                {% if selected_sort == "price_asc" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Giá thấp → cao
+                            </option>
+
+
+                            <option
+                                value="price_desc"
+                                {% if selected_sort == "price_desc" %}
+                                    selected
+                                {% endif %}
+                            >
+                                Giá cao → thấp
+                            </option>
+
+                        </select>
+
+                    </form>
+
+
+
+                    <!-- TÌM KIẾM -->
+
+                    <form
+                        method="get"
+                        class="books-search-form"
+                    >
+
+                        {% if selected_category %}
+
+                            <input
+                                type="hidden"
+                                name="category"
+                                value="{{ selected_category }}"
+                            >
+
+                        {% endif %}
+
+
+                        {% if selected_sort %}
+
+                            <input
+                                type="hidden"
+                                name="sort"
+                                value="{{ selected_sort }}"
+                            >
+
+                        {% endif %}
+
+
+                        <input
+                            type="text"
+                            name="q"
+                            value="{{ query }}"
+                            placeholder="Nhập tên sách..."
+                            aria-label="Tìm kiếm sách"
+                        >
+
+
+                        <button
+                            type="submit"
+                            aria-label="Tìm kiếm"
+                        >
+                            🔍
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     KẾT QUẢ
+                ================================================== -->
+
+                {% if books %}
+
+                    <div class="product-grid">
+
+
+                        {% for book in books %}
+
+                            <div class="product-card">
+
+
+                                <!-- ẢNH -->
+
+                                <a
+                                    href="{% url 'book_detail' book.id %}"
+                                    class="product-image"
+                                >
+
+                                    {% if book.image %}
+
+                                        <img
+                                            src="{{ book.image.url }}"
+                                            alt="{{ book.title }}"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="no-image">
+                                            Chưa có ảnh
+                                        </div>
+
+                                    {% endif %}
+
+                                </a>
+
+
+
+                                <!-- THÔNG TIN -->
+
+                                <div class="product-info">
+
+
+                                    <!-- TÊN -->
+
+                                    <a
+                                        href="{% url 'book_detail' book.id %}"
+                                        class="product-title"
+                                    >
+
+                                        {{ book.title }}
+
+                                    </a>
+
+
+
+                                    <!-- TÁC GIẢ -->
+
+                                    <p class="product-author">
+
+                                        {% for author in book.authors.all %}
+
+                                            {{ author.name }}
+
+                                            {% if not forloop.last %}
+                                                ,
+                                            {% endif %}
+
+                                        {% empty %}
+
+                                            Chưa cập nhật tác giả
+
+                                        {% endfor %}
+
+                                    </p>
+
+
+
+                                    <!-- GIÁ -->
+
+                                    <div class="product-price">
+
+                                        <span class="current-price">
+
+                                            {{ book.price|floatformat:0 }} ₫
+
+                                        </span>
+
+
+                                        {% if book.original_price %}
+
+                                            <span class="original-price">
+
+                                                {{ book.original_price|floatformat:0 }} ₫
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+
+                                    <!-- GIẢM GIÁ -->
+
+                                    {% if book.original_price %}
+
+                                        <span class="product-discount">
+
+                                            Giảm giá
+
+                                        </span>
+
+                                    {% endif %}
+
+
+
+                                    <!-- TỒN KHO -->
+
+                                    {% if book.stock > 0 %}
+
+                                        <p class="product-stock">
+
+                                            Còn {{ book.stock }} sản phẩm
+
+                                        </p>
+
+                                    {% else %}
+
+                                        <p class="product-stock">
+
+                                            Hết hàng
+
+                                        </p>
+
+                                    {% endif %}
+
+
+
+                                    <!-- CHI TIẾT -->
+
+                                    <a
+                                        href="{% url 'book_detail' book.id %}"
+                                        class="product-button"
+                                    >
+
+                                        XEM CHI TIẾT
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                {% else %}
+
+
+                    <!-- =================================================
+                         KHÔNG CÓ KẾT QUẢ
+                    ================================================== -->
+
+                    <div class="empty-books">
+
+                        <div class="empty-books-icon">
+                            📚
+                        </div>
+
+                        <h3>
+                            Không tìm thấy sách
+                        </h3>
+
+
+                        {% if query %}
+
+                            <p>
+
+                                Không có sách phù hợp với từ khóa
+                                "<strong>{{ query }}</strong>".
+
+                            </p>
 
                         {% else %}
 
-                            <div class="no-image">
-                                Chưa có ảnh
-                            </div>
+                            <p>
 
-                        {% endif %}
+                                Không có sách nào phù hợp
+                                với bộ lọc hiện tại.
 
-                    </div>
-
-
-                    <div class="product-info">
-
-                        <a href="#"
-                           class="product-title">
-
-                            {{ book.title }}
-
-                        </a>
-
-
-                        <div class="product-price">
-
-                            <span class="current-price">
-                                {{ book.price|floatformat:0 }} ₫
-                            </span>
-
-                            {% if book.original_price %}
-
-                                <span class="original-price">
-                                    {{ book.original_price|floatformat:0 }} ₫
-                                </span>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        {% if book.original_price %}
-
-                            <span class="product-discount">
-                                Đang giảm giá
-                            </span>
+                            </p>
 
                         {% endif %}
 
 
-                        <a href="{% url 'book_detail' book.id %}"
-                           class="product-button">
+                        <a
+                            href="{% url 'book_list' %}"
+                            class="product-button"
+                        >
 
-                            XEM CHI TIẾT
+                            XEM TẤT CẢ SÁCH
 
                         </a>
 
                     </div>
 
-                </div>
+                {% endif %}
 
-            {% empty %}
-
-                <div class="empty-books">
-
-                    <h3>
-                        Không tìm thấy sách
-                    </h3>
-
-                    <p>
-                        Hãy thử tìm kiếm với từ khóa khác.
-                    </p>
-
-                </div>
-
-            {% endfor %}
+            </main>
 
         </div>
 

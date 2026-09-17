@@ -1,0 +1,68 @@
+{% extends "admin/index.html" %}
+
+{% load i18n %}
+
+{% block content %}
+
+<div style="
+    margin-bottom: 25px;
+    padding: 20px 24px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+">
+
+    <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    ">
+
+        <div>
+
+            <h2 style="
+                margin: 0 0 6px 0;
+                font-size: 20px;
+                color: #333;
+            ">
+                📊 Thống kê bán hàng
+            </h2>
+
+            <p style="
+                margin: 0;
+                color: #666;
+                font-size: 14px;
+            ">
+                Xem doanh thu, đơn hàng, sách bán chạy,
+                tồn kho và đánh giá.
+            </p>
+
+        </div>
+
+
+        <a
+            href="{% url 'statistics' %}"
+            style="
+                display: inline-block;
+                padding: 11px 20px;
+                background: #417690;
+                color: #ffffff;
+                text-decoration: none;
+                border-radius: 5px;
+                font-size: 14px;
+                font-weight: 600;
+                white-space: nowrap;
+            "
+        >
+            📈 Xem thống kê
+        </a>
+
+    </div>
+
+</div>
+
+
+{{ block.super }}
+
+{% endblock %}

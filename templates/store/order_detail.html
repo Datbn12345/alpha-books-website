@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Đơn hàng #{{ order.id }} - Alpha-books
+Chi tiết đơn hàng #{{ order.id }} - Alpha-books
 {% endblock %}
 
 {% block content %}
@@ -10,258 +10,241 @@
 
     <section class="section">
 
-        <!-- ========================= -->
-        <!-- THÔNG BÁO -->
-        <!-- ========================= -->
-
-        {% if messages %}
-
-            {% for message in messages %}
-
-                <div class="form-success">
-                    {{ message }}
-                </div>
-
-            {% endfor %}
-
-        {% endif %}
-
-
-        <!-- ========================= -->
         <!-- TIÊU ĐỀ -->
-        <!-- ========================= -->
 
-        <div class="order-success">
+        <div class="order-detail-header">
 
-            <div class="order-success-icon">
-                ✓
+            <div>
+                <h1 class="section-title">
+                    Chi tiết đơn hàng #{{ order.id }}
+                </h1>
+
+                <p>
+                    Ngày đặt:
+                    <strong>
+                        {{ order.created_at|date:"d/m/Y H:i" }}
+                    </strong>
+                </p>
             </div>
 
-            <h1>
-                Đặt hàng thành công!
-            </h1>
 
-            <p>
-                Cảm ơn bạn đã mua hàng tại Alpha-books.
-            </p>
+            <!-- TRẠNG THÁI -->
 
-            <p>
-                Mã đơn hàng:
-                <strong>
-                    #{{ order.id }}
-                </strong>
-            </p>
+            <div class="order-status">
+
+                {% if order.status == "pending" %}
+
+                    <span class="status pending">
+                        Chờ xác nhận
+                    </span>
+
+                {% elif order.status == "confirmed" %}
+
+                    <span class="status confirmed">
+                        Đã xác nhận
+                    </span>
+
+                {% elif order.status == "shipping" %}
+
+                    <span class="status shipping">
+                        Đang giao
+                    </span>
+
+                {% elif order.status == "completed" %}
+
+                    <span class="status completed">
+                        Hoàn thành
+                    </span>
+
+                {% elif order.status == "cancelled" %}
+
+                    <span class="status cancelled">
+                        Đã hủy
+                    </span>
+
+                {% endif %}
+
+            </div>
 
         </div>
 
 
-        <!-- ========================= -->
-        <!-- THÔNG TIN ĐƠN HÀNG -->
-        <!-- ========================= -->
+        <!-- THÔNG TIN NGƯỜI NHẬN -->
 
-        <div class="order-layout">
+        <div class="order-info-box">
 
-            <!-- THÔNG TIN NHẬN HÀNG -->
+            <h2>
+                Thông tin nhận hàng
+            </h2>
 
-            <div class="order-box">
+            <div class="order-info-grid">
 
-                <h2>
-                    Thông tin nhận hàng
-                </h2>
-
-
-                <div class="order-info">
+                <div>
 
                     <p>
-                        <strong>
-                            Người nhận:
-                        </strong>
-
+                        <strong>Họ và tên:</strong>
                         {{ order.full_name }}
                     </p>
 
-
                     <p>
-                        <strong>
-                            Số điện thoại:
-                        </strong>
-
+                        <strong>Số điện thoại:</strong>
                         {{ order.phone }}
                     </p>
 
+                </div>
+
+
+                <div>
 
                     <p>
-                        <strong>
-                            Địa chỉ:
-                        </strong>
-
+                        <strong>Địa chỉ:</strong>
                         {{ order.address }}
                     </p>
 
-
                     <p>
-                        <strong>
-                            Phương thức thanh toán:
-                        </strong>
+                        <strong>Phương thức thanh toán:</strong>
 
-                        {{ order.get_payment_method_display }}
+                        {% if order.payment_method == "cod" %}
+                            Thanh toán khi nhận hàng
+
+                        {% elif order.payment_method == "bank" %}
+                            Chuyển khoản ngân hàng
+
+                        {% elif order.payment_method == "momo" %}
+                            Ví MoMo
+
+                        {% endif %}
+
                     </p>
-
-
-                    <p>
-                        <strong>
-                            Trạng thái:
-                        </strong>
-
-                        {{ order.get_status_display }}
-                    </p>
-
-
-                    <p>
-                        <strong>
-                            Ngày đặt:
-                        </strong>
-
-                        {{ order.created_at|date:"d/m/Y H:i" }}
-                    </p>
-
-
-                    {% if order.note %}
-
-                        <p>
-
-                            <strong>
-                                Ghi chú:
-                            </strong>
-
-                            {{ order.note }}
-
-                        </p>
-
-                    {% endif %}
 
                 </div>
 
             </div>
 
 
-            <!-- DANH SÁCH SẢN PHẨM -->
+            {% if order.note %}
 
-            <div class="order-box">
+                <p>
+                    <strong>Ghi chú:</strong>
+                    {{ order.note }}
+                </p>
 
-                <h2>
-                    Sản phẩm
-                </h2>
-
-
-                <div class="order-items">
-
-                    {% for item in order.items.all %}
-
-                        <div class="order-item">
-
-                            <!-- ẢNH -->
-
-                            <div class="order-item-image">
-
-                                {% if item.book.image %}
-
-                                    <img
-                                        src="{{ item.book.image.url }}"
-                                        alt="{{ item.book.title }}"
-                                    >
-
-                                {% else %}
-
-                                    <div class="no-image">
-                                        Chưa có ảnh
-                                    </div>
-
-                                {% endif %}
-
-                            </div>
-
-
-                            <!-- THÔNG TIN -->
-
-                            <div class="order-item-info">
-
-                                <h3>
-                                    {{ item.book.title }}
-                                </h3>
-
-                                <p>
-                                    Đơn giá:
-
-                                    <strong>
-                                        {{ item.price|floatformat:0 }} ₫
-                                    </strong>
-                                </p>
-
-                                <p>
-                                    Số lượng:
-
-                                    <strong>
-                                        {{ item.quantity }}
-                                    </strong>
-                                </p>
-
-                            </div>
-
-
-                            <!-- THÀNH TIỀN -->
-
-                            <div class="order-item-subtotal">
-
-                                {{ item.subtotal|floatformat:0 }} ₫
-
-                            </div>
-
-                        </div>
-
-                    {% endfor %}
-
-                </div>
-
-
-                <!-- TỔNG TIỀN -->
-
-                <div class="order-total">
-
-                    <span>
-                        Tổng tiền
-                    </span>
-
-                    <strong>
-                        {{ order.total_amount|floatformat:0 }} ₫
-                    </strong>
-
-                </div>
-
-            </div>
+            {% endif %}
 
         </div>
 
 
-        <!-- ========================= -->
+        <!-- DANH SÁCH SẢN PHẨM -->
+
+        <div class="order-items-box">
+
+            <h2>
+                Sản phẩm đã đặt
+            </h2>
+
+
+            {% for item in order.items.all %}
+
+                <div class="order-item">
+
+                    <!-- ẢNH -->
+
+                    <div class="order-item-image">
+
+                        {% if item.book.image %}
+
+                            <img
+                                src="{{ item.book.image.url }}"
+                                alt="{{ item.book.title }}"
+                            >
+
+                        {% else %}
+
+                            <div class="no-image">
+                                Chưa có ảnh
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- THÔNG TIN -->
+
+                    <div class="order-item-info">
+
+                        <h3>
+                            {{ item.book.title }}
+                        </h3>
+
+                        <p>
+                            Đơn giá:
+                            <strong>
+                                {{ item.price|floatformat:0 }} ₫
+                            </strong>
+                        </p>
+
+                        <p>
+                            Số lượng:
+                            <strong>
+                                {{ item.quantity }}
+                            </strong>
+                        </p>
+
+                        <p>
+                            Thành tiền:
+                            <strong>
+                                {{ item.subtotal|floatformat:0 }} ₫
+                            </strong>
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <p>
+                    Không có sản phẩm trong đơn hàng.
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- TỔNG TIỀN -->
+
+        <div class="order-total-box">
+
+            <span>
+                Tổng tiền:
+            </span>
+
+            <strong>
+                {{ order.total_amount|floatformat:0 }} ₫
+            </strong>
+
+        </div>
+
+
         <!-- NÚT -->
-        <!-- ========================= -->
 
         <div class="order-actions">
 
             <a
-                href="{% url 'book_list' %}"
-                class="secondary-button"
+                href="{% url 'my_orders' %}"
+                class="product-button"
             >
-                TIẾP TỤC MUA SẮM
+                ← QUAY LẠI ĐƠN HÀNG
             </a>
 
 
             <a
-                href="{% url 'home' %}"
+                href="{% url 'book_list' %}"
                 class="product-button"
             >
-                VỀ TRANG CHỦ
+                TIẾP TỤC MUA HÀNG
             </a>
 
         </div>
